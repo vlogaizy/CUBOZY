@@ -281,11 +281,11 @@
         </div>
     </div>
 
-    <div class="w-full max-w-md bg-slate-50 dark:bg-slate-900 min-h-[96vh] sm:min-h-[92vh] shadow-2xl relative overflow-hidden flex flex-col no-scrollbar pb-24 rounded-[2.2rem] border border-white/60 dark:border-slate-800/80 transition-all duration-300">
+    <div class="w-full max-w-md bg-slate-50 dark:bg-slate-900 min-h-[96vh] sm:min-h-[92vh] shadow-2xl relative overflow-hidden flex flex-col no-scrollbar pb-24 rounded-[3.8rem] border border-white/60 dark:border-slate-800/80 transition-all duration-300">
         <!-- Top subtle fade vignette overlay -->
-        <div class="pointer-events-none absolute top-0 inset-x-0 h-10 bg-gradient-to-b from-black/25 via-black/5 to-transparent z-30 rounded-t-[2.2rem]"></div>
+        <div class="pointer-events-none absolute top-0 inset-x-0 h-10 bg-gradient-to-b from-black/25 via-black/5 to-transparent z-30 rounded-t-[3.8rem]"></div>
         
-        <header class="bg-gradient-to-br from-emerald-950 via-emerald-900 to-green-950 text-white p-6 pt-20 pb-20 rounded-b-[2.5rem] shadow-lg z-10 relative overflow-hidden">
+        <header class="bg-gradient-to-br from-emerald-950 via-emerald-900 to-green-950 text-white p-6 pt-12 pb-12 rounded-b-[4rem] shadow-lg z-10 relative overflow-hidden">
             <!-- Stylized Paddy Grass & Rice Sheaves SVG Graphic -->
             <svg class="absolute -bottom-4 -right-4 w-60 h-60 text-emerald-200 dark:text-emerald-400 opacity-20 pointer-events-none transform -rotate-3 transition-opacity" viewBox="0 0 200 200" fill="currentColor">
                 <!-- Paddy Stalk 1 & Grains (Arching left) -->
@@ -336,7 +336,7 @@
             </div>
         </header>
 
-        <main class="flex-1 px-5 z-20 -mt-12 space-y-6">
+        <main class="flex-1 px-5 z-20 -mt-8 space-y-6">
             
             <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl shadow-green-900/5 border border-slate-100 dark:border-slate-700/60 p-5 transform transition-colors duration-300">
                 <div class="flex justify-between items-center mb-4">
@@ -378,23 +378,23 @@
             </button>
 
             <div class="mt-8 pb-4">
-                <div class="flex justify-between items-end mb-3 px-1">
-                    <div>
+                <div class="flex justify-between items-center mb-4 px-1 gap-3">
+                    <div class="shrink-0">
                         <h2 class="text-xl font-extrabold text-slate-800 dark:text-white">Recent Works</h2>
                         <p class="text-xs text-slate-500 dark:text-slate-300 font-medium mt-0.5">Your saved history</p>
                     </div>
-                </div>
 
-                <!-- Search Bar -->
-                <div class="relative mb-3">
-                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path></svg>
-                    </span>
-                    <input type="text" id="recordSearchInput" oninput="handleSearch(this.value)" placeholder="Search customer, location or date..."
-                        class="w-full pl-10 pr-9 py-2.5 bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 rounded-2xl text-xs font-bold text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:ring-2 focus:ring-emerald-700 shadow-sm transition-all" />
-                    <button type="button" id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold">
-                        ✕
-                    </button>
+                    <!-- Compact Search Bar -->
+                    <div class="relative flex-1 max-w-[150px] sm:max-w-[200px]">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path></svg>
+                        </span>
+                        <input type="text" id="recordSearchInput" oninput="handleSearch(this.value)" placeholder="Search..."
+                            class="w-full pl-8 pr-7 py-2 bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:ring-2 focus:ring-emerald-700 shadow-sm transition-all" />
+                        <button type="button" id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold">
+                            ✕
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Filter Tabs -->
@@ -417,7 +417,7 @@
         </main>
 
         <!-- Bottom smooth fade overlay -->
-        <div class="pointer-events-none absolute bottom-0 inset-x-0 h-20 bg-gradient-to-t from-slate-50 via-slate-50/85 to-transparent dark:from-slate-900 dark:via-slate-900/85 z-20 rounded-b-[2.2rem]"></div>
+        <div class="pointer-events-none absolute bottom-0 inset-x-0 h-20 bg-gradient-to-t from-slate-50 via-slate-50/85 to-transparent dark:from-slate-900 dark:via-slate-900/85 z-20 rounded-b-[3.8rem]"></div>
     </div>
 
     <div id="addRecordModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 transition-all duration-300">
