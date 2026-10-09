@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>CUBOZY</title>
+    <title>KUBO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
@@ -91,7 +91,7 @@
             <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-3.5 shadow-inner">
                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
             </div>
-            <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">CUBOZY</h2>
+            <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">KUBO</h2>
             <p class="text-emerald-600 text-xs font-bold mb-5 mt-0.5">Cloud Secure Access</p>
             
             <input type="password" id="loginPin" placeholder="Enter PIN" inputmode="numeric" maxlength="4"
@@ -113,7 +113,7 @@
             
             <div class="relative z-10 flex justify-between items-center">
                 <div>
-                    <h1 class="text-3xl font-extrabold tracking-tight">CUBOZY</h1>
+                    <h1 class="text-3xl font-extrabold tracking-tight">KUBO</h1>
                 </div>
                 <div class="bg-white/20 p-2.5 rounded-2xl backdrop-blur-sm">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -201,82 +201,82 @@
     </div>
 
     <div id="addRecordModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 transition-all duration-300">
-        <div id="addRecordContent" class="glass-modal rounded-[2.8rem] shadow-2xl w-[98%] max-w-[530px] p-9 relative transform transition-all border border-white/50 max-h-[94vh] overflow-y-auto no-scrollbar mx-auto">
+        <div id="addRecordContent" class="glass-modal rounded-[2.5rem] shadow-2xl w-full max-w-[430px] p-6 relative transform transition-all border border-white/50 max-h-[92vh] overflow-y-auto no-scrollbar mx-auto">
             
-            <button onclick="closeAddRecordModal()" class="absolute top-6 right-6 w-10 h-10 flex items-center justify-center bg-slate-100 hover:bg-slate-200 active:bg-slate-300 rounded-full text-slate-500 transition-colors z-10 shadow-sm">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <button onclick="closeAddRecordModal()" class="absolute top-5 right-5 w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 active:bg-slate-300 rounded-full text-slate-400 transition-colors z-10 shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
 
-            <div class="absolute top-0 right-0 w-48 h-48 bg-emerald-50 rounded-bl-full -z-10 opacity-70"></div>
+            <div class="absolute top-0 right-0 w-36 h-36 bg-emerald-50 rounded-bl-full -z-10 opacity-70"></div>
             
-            <h2 class="text-3xl font-extrabold text-slate-800 mb-7 flex items-center gap-3.5">
-                <div class="bg-emerald-100 p-3.5 rounded-2xl text-emerald-600">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 bg-emerald-100 text-emerald-500 rounded-2xl flex items-center justify-center shadow-inner">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
                 </div>
-                New Work
-            </h2>
+                <h2 class="text-xl font-extrabold text-slate-800 tracking-tight">New Work</h2>
+            </div>
             
-            <form id="recordForm" class="space-y-6">
-                <div class="space-y-5">
-                    <div class="bg-slate-50 rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                        <div class="relative flex items-center px-4 py-4.5">
-                            <span class="text-slate-400 mr-3 flex items-center justify-center shrink-0">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            <form id="recordForm" class="space-y-4">
+                <div class="space-y-3.5">
+                    <div class="bg-slate-50/80 rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden p-1">
+                        <div class="relative flex items-center px-3 py-3">
+                            <span class="text-slate-400 mr-2.5 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                             </span>
                             <input type="text" id="name" required="required" placeholder="Customer / Field Name" 
-                                class="w-full bg-transparent border-none focus:ring-0 outline-none text-lg font-bold text-slate-700 placeholder-slate-400" />
+                                class="w-full bg-transparent border-none focus:ring-0 outline-none text-sm font-bold text-slate-700 placeholder-slate-400" />
                         </div>
-                        <div class="h-[1px] bg-slate-100 mx-4"></div>
-                        <div class="relative flex items-center px-4 py-4.5">
-                            <span class="text-slate-400 mr-3 flex items-center justify-center shrink-0">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <div class="h-[1px] bg-slate-200/60 mx-3"></div>
+                        <div class="relative flex items-center px-3 py-3">
+                            <span class="text-slate-400 mr-2.5 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                             </span>
                             <input type="text" id="location" required="required" placeholder="Location" 
-                                class="w-full bg-transparent border-none focus:ring-0 outline-none text-lg font-bold text-slate-700 placeholder-slate-400" />
+                                class="w-full bg-transparent border-none focus:ring-0 outline-none text-sm font-bold text-slate-700 placeholder-slate-400" />
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-extrabold text-slate-500 mb-2 ml-2 uppercase tracking-wider">Date</label>
+                        <label class="block text-[11px] font-extrabold text-slate-400 mb-1.5 ml-1 uppercase tracking-wider">Date</label>
                         <div class="flex justify-center">
                             <input type="date" id="date" required="required" 
-                                class="w-full max-w-[280px] px-4 py-4 bg-slate-50 border border-slate-200 rounded-[1.3rem] focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-lg font-bold text-slate-700 shadow-sm box-border text-center" />
+                                class="w-full max-w-[250px] px-3.5 py-3 bg-slate-50/80 border border-slate-200/60 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-sm font-bold text-slate-700 shadow-sm box-border text-center" />
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4.5">
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-sm font-extrabold text-slate-500 mb-2 ml-2 uppercase tracking-wider">Acres</label>
+                            <label class="block text-[11px] font-extrabold text-slate-400 mb-1.5 ml-1 uppercase tracking-wider">Acres</label>
                             <div class="relative">
                                 <input type="number" id="acres" required="required" min="0.01" step="0.01" placeholder="0.00" inputmode="decimal"
-                                    class="w-full px-5 py-4.5 bg-slate-50 border border-slate-200 rounded-[1.3rem] focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-lg font-extrabold text-slate-700 shadow-sm box-border" />
+                                    class="w-full px-3.5 py-3 bg-slate-50/80 border border-slate-200/60 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-sm font-extrabold text-slate-700 shadow-sm box-border" />
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-extrabold text-slate-500 mb-2 ml-2 uppercase tracking-wider">Price/Acre</label>
+                            <label class="block text-[11px] font-extrabold text-slate-400 mb-1.5 ml-1 uppercase tracking-wider">Price/Acre</label>
                             <div class="relative">
-                                <span class="absolute inset-y-0 left-0 pl-4.5 flex items-center text-slate-400 text-lg font-bold">Rs.</span>
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 text-sm font-bold">Rs.</span>
                                 <input type="number" id="price" required="required" min="0" step="1" placeholder="0" inputmode="numeric"
-                                    class="w-full pl-12 pr-4.5 py-4.5 bg-slate-50 border border-slate-200 rounded-[1.3rem] focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-lg font-extrabold text-slate-700 shadow-sm box-border" />
+                                    class="w-full pl-10 pr-3.5 py-3 bg-slate-50/80 border border-slate-200/60 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-sm font-extrabold text-slate-700 shadow-sm box-border" />
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-extrabold text-slate-500 mb-2 ml-2 uppercase tracking-wider">Advance / Amount Received</label>
+                        <label class="block text-[11px] font-extrabold text-slate-400 mb-1.5 ml-1 uppercase tracking-wider">Advance / Amount Received</label>
                         <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-4.5 flex items-center text-slate-400 text-lg font-bold">Rs.</span>
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 text-sm font-bold">Rs.</span>
                             <input type="number" id="paid" min="0" step="1" placeholder="0" inputmode="numeric"
-                                class="w-full pl-12 pr-4.5 py-4.5 bg-slate-50 border border-slate-200 rounded-[1.3rem] focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-lg font-extrabold text-slate-700 shadow-sm box-border" />
+                                class="w-full pl-10 pr-3.5 py-3 bg-slate-50/80 border border-slate-200/60 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-sm font-extrabold text-slate-700 shadow-sm box-border" />
                         </div>
                     </div>
                 </div>
 
                 <button type="submit" 
-                    class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 active:from-emerald-600 active:to-teal-600 text-white font-extrabold py-4.5 rounded-[1.4rem] transition-transform active:scale-[0.98] mt-6 shadow-lg shadow-emerald-500/30 flex justify-center items-center gap-3 text-lg box-border">
+                    class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 active:from-emerald-600 active:to-teal-600 text-white font-extrabold py-3.5 rounded-xl transition-transform active:scale-[0.98] mt-4 shadow-lg shadow-emerald-500/25 flex justify-center items-center gap-2 text-sm box-border">
                     <span>Save Record</span>
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
                 </button>
             </form>
         </div>
@@ -372,6 +372,8 @@
         let records = [];
         let currentFilter = 'all'; // 'all', 'pending', 'completed'
         let db, auth, userId;
+        let activePaymentRecordIndex = null;
+        let activeHistoryRecordIndex = null;
 
         const form = document.getElementById('recordForm');
         const recordsList = document.getElementById('recordsList');
@@ -383,7 +385,6 @@
 
         document.getElementById('date').valueAsDate = new Date();
 
-        // Helper function to animate modal opening with smooth pop-in and smooth black backdrop fade-in
         window.openAnimatedModal = function(modalId, contentId, focusElementId) {
             const modal = document.getElementById(modalId);
             const content = document.getElementById(contentId);
@@ -403,7 +404,6 @@
             }
         };
 
-        // Helper function to animate modal closing with smooth pop-out and smooth black backdrop fade-out
         window.closeAnimatedModal = function(modalId, contentId, callback) {
             const modal = document.getElementById(modalId);
             const content = document.getElementById(contentId);
@@ -460,13 +460,13 @@
 
         async function initCloud() {
             const firebaseConfig = {
-                apiKey: "AIzaSyAouyb1rP7D8iSfi-xgT977wXPA4-2jfrs",
-                authDomain: "cubozy.firebaseapp.com",
-                projectId: "cubozy",
-                storageBucket: "cubozy.firebasestorage.app",
-                messagingSenderId: "304686584989",
-                appId: "1:304686584989:web:9052fd65c1eca9049eb074",
-                measurementId: "G-392T65J85M"
+                apiKey: "AIzaSyBujfSoOSroRCiOw_z-CY1oOzlN5e5yxBw",
+                authDomain: "kubo-1f79d.firebaseapp.com",
+                projectId: "kubo-1f79d",
+                storageBucket: "kubo-1f79d.firebasestorage.app",
+                messagingSenderId: "1080663216638",
+                appId: "1:1080663216638:web:763344bfcdd350f9edf0af",
+                measurementId: "G-GS42YHG8VB"
             };
 
             const app = initializeApp(firebaseConfig);
@@ -474,8 +474,14 @@
             db = getFirestore(app);
             auth = getAuth(app);
 
-            await signInAnonymously(auth);
-            userId = auth.currentUser?.uid || crypto.randomUUID();
+            try {
+                await signInAnonymously(auth);
+                userId = auth.currentUser?.uid;
+            } catch (authError) {
+                console.warn("Firebase Auth Error: Anonymous sign-in not enabled. Using local UUID fallback.", authError);
+                userId = localStorage.getItem('kubo_local_uid') || crypto.randomUUID();
+                localStorage.setItem('kubo_local_uid', userId);
+            }
 
             if (!userId) throw new Error("No User");
 
@@ -491,7 +497,11 @@
                 renderRecords();
             }, (error) => {
                 console.error("Sync error:", error);
-                window.customAlert("Real-time sync disconnected.");
+                if (error.message.toLowerCase().includes("permission") || error.code === "permission-denied") {
+                    window.customAlert("Database Error: Missing permissions. Please update Firestore Security Rules in your Firebase Console.");
+                } else {
+                    window.customAlert("Real-time sync disconnected.");
+                }
             });
         }
 
@@ -530,6 +540,11 @@
         }
 
         let recordToDeleteIndex = null;
+
+        window.requestDeleteRecord = function(index) {
+            recordToDeleteIndex = index;
+            window.openAnimatedModal('passwordModal', 'passwordContent', 'clearPassword');
+        }
 
         window.closePasswordModal = function() {
             window.closeAnimatedModal('passwordModal', 'passwordContent', () => {
@@ -576,6 +591,88 @@
             document.getElementById('passwordError').classList.remove('opacity-100');
         }
 
+        window.openPaymentModal = function(index) {
+            activePaymentRecordIndex = index;
+            const record = records[index];
+            document.getElementById('paymentModalContext').innerText = `${record.name} - Balance Due: Rs. ${(record.acres * record.price - (record.paidAmount || 0)).toLocaleString()}`;
+            document.getElementById('newPaymentAmount').value = '';
+            window.openAnimatedModal('paymentModal', 'paymentContent', 'newPaymentAmount');
+        }
+
+        window.closePaymentModal = function() {
+            window.closeAnimatedModal('paymentModal', 'paymentContent', () => {
+                activePaymentRecordIndex = null;
+                document.getElementById('newPaymentAmount').value = '';
+            });
+        }
+
+        window.savePayment = async function() {
+            if (activePaymentRecordIndex === null) return;
+            const amtInput = document.getElementById('newPaymentAmount');
+            const amt = parseFloat(amtInput.value);
+            if (isNaN(amt) || amt <= 0) {
+                window.customAlert("Please enter a valid payment amount.");
+                return;
+            }
+
+            const record = records[activePaymentRecordIndex];
+            const currentPaid = record.paidAmount || 0;
+            const totalCost = record.acres * record.price;
+            const newTotalPaid = currentPaid + amt;
+
+            const newPaymentEntry = {
+                amount: amt,
+                date: new Date().toISOString().split('T')[0]
+            };
+            const paymentHistory = record.paymentHistory || [];
+            paymentHistory.push(newPaymentEntry);
+
+            try {
+                await updateDoc(doc(db, 'cubozy_tractor_works', record.id), {
+                    paidAmount: newTotalPaid,
+                    paymentHistory: paymentHistory
+                });
+                window.closePaymentModal();
+            } catch(e) {
+                window.customAlert("Failed to save payment to cloud.");
+            }
+        }
+
+        window.openHistoryModal = function(index) {
+            activeHistoryRecordIndex = index;
+            const record = records[index];
+            document.getElementById('historyModalContext').innerText = `${record.name} (${record.location})`;
+            
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            
+            const history = record.paymentHistory || [];
+            if (history.length === 0) {
+                historyList.innerHTML = `<p class="text-slate-400 text-xs text-center py-4">No payment history recorded yet.</p>`;
+            } else {
+                history.forEach((h, i) => {
+                    const item = document.createElement('div');
+                    item.className = 'bg-slate-50 border border-slate-100 rounded-xl p-3 flex justify-between items-center';
+                    item.innerHTML = `
+                        <div class="flex flex-col">
+                            <span class="text-xs font-bold text-slate-700">Payment #${i + 1}</span>
+                            <span class="text-[10px] text-slate-400 font-medium">${h.date}</span>
+                        </div>
+                        <span class="text-xs font-extrabold text-purple-600">+ Rs. ${h.amount.toLocaleString()}</span>
+                    `;
+                    historyList.appendChild(item);
+                });
+            }
+
+            window.openAnimatedModal('historyModal', 'historyContent');
+        }
+
+        window.closeHistoryModal = function() {
+            window.closeAnimatedModal('historyModal', 'historyContent', () => {
+                activeHistoryRecordIndex = null;
+            });
+        }
+
         const formatCurrency = (amount) => {
             return 'Rs. ' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         };
@@ -603,6 +700,11 @@
                 totalPaidOverall += paidAmount;
                 totalDueOverall += rowDue;
             });
+
+            grandTotalDisplay.innerText = formatCurrency(grandTotal);
+            totalRecordsDisplay.innerText = `${records.length} Works`;
+            totalPaidDisplay.innerText = formatCurrency(totalPaidOverall);
+            totalDueDisplay.innerText = formatCurrency(totalDueOverall);
 
             const filteredRecords = records.filter(record => {
                 const rowTotal = record.acres * record.price;
@@ -694,41 +796,27 @@
                                 <button onclick="openHistoryModal(${originalIndex})" class="bg-purple-50 text-purple-600 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wide active:bg-purple-100 transition-colors flex items-center gap-1">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                     History
-                                </button>
-                                ` : ''}
+                                </button>` : ''}
                                 ${!isFullyPaid ? `
                                 <button onclick="openPaymentModal(${originalIndex})" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wide active:bg-blue-100 transition-colors flex items-center gap-1">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                     Pay
-                                </button>
-                                ` : `
-                                <div class="bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wide flex items-center gap-1">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                </button>` : `
+                                <span class="bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-xl text-[10px] font-extrabold uppercase tracking-wide flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                                     Settled
-                                </div>
-                                `}
+                                </span>`}
                             </div>
                         </div>
                     `;
-                    
                     card.appendChild(innerContent);
                     recordsList.appendChild(card);
                 });
             }
-
-            grandTotalDisplay.textContent = formatCurrency(grandTotal);
-            totalPaidDisplay.textContent = formatCurrency(totalPaidOverall);
-            totalDueDisplay.textContent = formatCurrency(totalDueOverall);
-            totalRecordsDisplay.textContent = records.length > 1 ? records.length + ' Works' : records.length + ' Work';
         }
 
-        form.addEventListener('submit', async function(e) {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!userId) {
-                window.customAlert("Please wait, cloud connection is establishing...");
-                return;
-            }
-
             const name = document.getElementById('name').value.trim();
             const location = document.getElementById('location').value.trim();
             const date = document.getElementById('date').value;
@@ -737,136 +825,34 @@
             const paid = parseFloat(document.getElementById('paid').value) || 0;
 
             if (!name || !location || !date || isNaN(acres) || isNaN(price)) {
-                window.customAlert("Please fill all required fields correctly.");
+                window.customAlert("Please fill in all required fields.");
                 return;
             }
 
-            const paymentHistory = [];
-            if (paid > 0) {
-                const todayFormatted = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-                paymentHistory.push({ date: todayFormatted, amount: paid });
-            }
+            const initialPaymentHistory = paid > 0 ? [{ amount: paid, date: date }] : [];
 
             const newRecord = {
-                name: name,
-                location: location,
-                date: date,
-                acres: acres,
-                price: price,
+                name,
+                location,
+                date,
+                acres,
+                price,
                 paidAmount: paid,
-                paymentHistory: paymentHistory
+                paymentHistory: initialPaymentHistory,
+                userId: userId,
+                createdAt: new Date().toISOString()
             };
 
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const ogText = submitBtn.innerHTML;
-            submitBtn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white inline-block mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Saving...</span>`;
-            submitBtn.disabled = true;
-
             try {
-                const recordsRef = collection(db, 'cubozy_tractor_works');
-                await addDoc(recordsRef, newRecord);
-                
-                document.getElementById('name').value = '';
-                document.getElementById('location').value = '';
-                document.getElementById('acres').value = '';
-                document.getElementById('price').value = '';
-                document.getElementById('paid').value = '';
-                
+                await addDoc(collection(db, 'cubozy_tractor_works'), newRecord);
+                form.reset();
+                document.getElementById('date').valueAsDate = new Date();
                 window.closeAddRecordModal();
-            } catch(error) {
-                console.error("Add failed", error);
+            } catch(e) {
+                console.error("Error adding document: ", e);
                 window.customAlert("Failed to save record to cloud.");
-            } finally {
-                submitBtn.innerHTML = ogText;
-                submitBtn.disabled = false;
             }
         });
-
-        let currentPaymentIndex = null;
-
-        window.openPaymentModal = function(index) {
-            currentPaymentIndex = index;
-            const record = records[index];
-            const rowTotal = record.acres * record.price;
-            const currentPaid = record.paidAmount || 0;
-            const rowDue = rowTotal - currentPaid;
-
-            document.getElementById('paymentModalContext').innerHTML = `Total: <b>${formatCurrency(rowTotal)}</b> &bull; Due: <b>${formatCurrency(rowDue)}</b>`;
-            document.getElementById('newPaymentAmount').value = '';
-            
-            window.openAnimatedModal('paymentModal', 'paymentContent', 'newPaymentAmount');
-        };
-
-        window.closePaymentModal = function() {
-            window.closeAnimatedModal('paymentModal', 'paymentContent', () => {
-                currentPaymentIndex = null;
-            });
-        };
-
-        window.savePayment = async function() {
-            if (currentPaymentIndex === null || !userId) return;
-            
-            const addedAmount = parseFloat(document.getElementById('newPaymentAmount').value) || 0;
-            if (addedAmount <= 0) {
-                window.closePaymentModal();
-                return;
-            }
-
-            const record = records[currentPaymentIndex];
-            const newPaidAmount = (record.paidAmount || 0) + addedAmount;
-            const newHistory = [...(record.paymentHistory || [])];
-            
-            const todayFormatted = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-            newHistory.push({ date: todayFormatted, amount: addedAmount });
-            
-            try {
-                await updateDoc(doc(db, 'cubozy_tractor_works', record.id), {
-                    paidAmount: newPaidAmount,
-                    paymentHistory: newHistory
-                });
-                window.closePaymentModal();
-            } catch(e) {
-                console.error(e);
-                window.customAlert("Failed to update payment in cloud.");
-            }
-        };
-
-        window.openHistoryModal = function(index) {
-            const record = records[index];
-            document.getElementById('historyModalContext').innerHTML = `Payments for <b>${record.name}</b>`;
-            
-            const historyList = document.getElementById('historyList');
-            historyList.innerHTML = '';
-            
-            if (!record.paymentHistory || record.paymentHistory.length === 0) {
-                 historyList.innerHTML = '<p class="text-xs text-slate-400 font-medium text-center py-4">No payment history found.</p>';
-            } else {
-                 record.paymentHistory.forEach(payment => {
-                     historyList.innerHTML += `
-                        <div class="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100 shadow-sm">
-                            <div class="flex items-center gap-2">
-                                <div class="bg-white p-1.5 rounded-full shadow-sm text-slate-400">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                </div>
-                                <span class="span text-xs font-bold text-slate-700">${payment.date}</span>
-                            </div>
-                            <span class="text-xs font-extrabold text-emerald-600">${formatCurrency(payment.amount)}</span>
-                        </div>
-                     `;
-                 });
-            }
-            
-            window.openAnimatedModal('historyModal', 'historyContent');
-        };
-
-        window.closeHistoryModal = function() {
-            window.closeAnimatedModal('historyModal', 'historyContent');
-        };
-
-        window.requestDeleteRecord = function(index) {
-            recordToDeleteIndex = index;
-            window.openAnimatedModal('passwordModal', 'passwordContent', 'clearPassword');
-        };
     </script>
 </body>
 </html>
