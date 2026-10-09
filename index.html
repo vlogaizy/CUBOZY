@@ -209,6 +209,11 @@
 </head>
 <body class="min-h-screen flex justify-center items-start sm:items-center py-2 sm:py-6 px-1.5 sm:px-0 selection:bg-emerald-200 dark:selection:bg-emerald-700/50 text-slate-800 dark:text-slate-200">
 
+    <!-- Startup 4-Second Loading Screen with Theme-matched background and circular spinner -->
+    <div id="startupLoader" class="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-gradient-to-br from-emerald-950 via-emerald-900 to-green-950 transition-opacity duration-700">
+        <div class="w-12 h-12 border-4 border-emerald-400/30 border-t-emerald-400 rounded-full animate-spin"></div>
+    </div>
+
     <div id="loginScreen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-all duration-500">
         <div class="absolute top-0 w-full h-1/2 bg-gradient-to-br from-emerald-950 via-emerald-900 to-green-950 rounded-b-[3rem] shadow-xl"></div>
         
@@ -763,6 +768,19 @@
             }
         });
 
+        // 4-Second Startup Loader Timer
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('startupLoader');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => {
+                        loader.remove();
+                    }, 700);
+                }
+            }, 3300);
+        });
+
         // Theme management
         const savedLocalTheme = localStorage.getItem('kubo_theme_dark');
         if (savedLocalTheme === 'true') {
@@ -1099,6 +1117,17 @@
                     submitBtn.innerHTML = `<span id="authSubmitBtnText">${currentAuthMode === 'signup' ? 'Sign Up' : 'Sign In'}</span>`;
                 }
             }
+        });
+
+        // 4-Second Startup Loader Timer
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('startupLoader');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.remove(), 700);
+                }
+            }, 3300);
         });
 
         function initCloudSync() {
