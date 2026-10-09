@@ -36,7 +36,6 @@
 </head>
 <body class="min-h-screen flex justify-center selection:bg-emerald-200 selection:text-emerald-900">
 
-    <!-- Secure Login Screen -->
     <div id="loginScreen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-50 transition-all duration-500">
         <!-- Premium Background Decoration -->
         <div class="absolute top-0 w-full h-1/2 bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-600 rounded-b-[3rem] shadow-xl"></div>
@@ -60,7 +59,6 @@
         </div>
     </div>
 
-    <!-- Mobile App Container -->
     <div class="w-full max-w-md bg-slate-50 min-h-screen shadow-2xl relative overflow-x-hidden flex flex-col no-scrollbar pb-24">
         
         <!-- Premium Gradient Header -->
@@ -161,9 +159,8 @@
         </main>
     </div>
 
-    <!-- Add Record Modal (Fully Responsive to phone size with safe padding) -->
-    <div id="addRecordModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity">
-        <div class="glass-modal rounded-[2.5rem] shadow-2xl w-full max-w-[92%] sm:max-w-md p-5 sm:p-6 relative transform transition-all border border-white/50 max-h-[85vh] overflow-y-auto no-scrollbar">
+    <div id="addRecordModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity">
+        <div class="glass-modal rounded-[2.5rem] shadow-2xl w-full max-w-sm p-6 relative transform transition-all border border-white/50 max-h-[85vh] overflow-y-auto no-scrollbar">
             
             <!-- Close Button -->
             <button onclick="closeAddRecordModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 active:bg-slate-300 rounded-full text-slate-500 transition-colors z-10 shadow-sm">
@@ -248,7 +245,6 @@
         </div>
     </div>
 
-    <!-- Custom Alert Modal -->
     <div id="alertModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity">
         <div class="glass-modal rounded-[2rem] shadow-2xl max-w-sm w-full p-6 text-center transform transition-all border border-white/50">
             <div class="w-12 h-12 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -260,7 +256,6 @@
         </div>
     </div>
 
-    <!-- Custom Confirm Modal -->
     <div id="confirmModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity">
         <div class="glass-modal rounded-[2rem] shadow-2xl max-w-sm w-full p-6 text-center transform transition-all border border-white/50">
             <div class="w-12 h-12 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -275,7 +270,6 @@
         </div>
     </div>
 
-    <!-- Custom Password Modal -->
     <div id="passwordModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity">
         <div class="glass-modal rounded-[2rem] shadow-2xl max-w-sm w-full p-6 text-center transform transition-all border border-white/50">
             <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -294,7 +288,6 @@
         </div>
     </div>
 
-    <!-- Custom Payment Modal -->
     <div id="paymentModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity">
         <div class="glass-modal rounded-[2rem] shadow-2xl max-w-sm w-full p-6 text-center transform transition-all border border-white/50">
             <div class="w-12 h-12 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -316,7 +309,6 @@
         </div>
     </div>
 
-    <!-- Custom Payment History Modal -->
     <div id="historyModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity">
         <div class="glass-modal rounded-[2rem] shadow-2xl max-w-sm w-full p-6 relative transform transition-all border border-white/50 max-h-[80vh] flex flex-col">
             <button onclick="closeHistoryModal()" class="absolute top-5 right-5 w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-slate-200 active:bg-slate-300 rounded-full text-slate-500 transition-colors z-10 shadow-sm">
