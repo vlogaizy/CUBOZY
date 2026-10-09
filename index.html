@@ -56,15 +56,15 @@
             animation: modalPopOut 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* Smooth Backdrop Animations */
+        /* Smooth Backdrop Animations with black fade */
         @keyframes backdropFadeIn {
-            from { opacity: 0; backdrop-filter: blur(0px); }
-            to { opacity: 1; backdrop-filter: blur(4px); }
+            from { opacity: 0; background-color: rgba(15, 23, 42, 0); }
+            to { opacity: 1; background-color: rgba(15, 23, 42, 0.4); }
         }
 
         @keyframes backdropFadeOut {
-            from { opacity: 1; backdrop-filter: blur(4px); }
-            to { opacity: 0; backdrop-filter: blur(0px); }
+            from { opacity: 1; background-color: rgba(15, 23, 42, 0.4); }
+            to { opacity: 0; background-color: rgba(15, 23, 42, 0); }
         }
 
         .animate-backdrop-in {
@@ -200,7 +200,7 @@
         </main>
     </div>
 
-    <div id="addRecordModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-all duration-300">
+    <div id="addRecordModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 transition-all duration-300">
         <div id="addRecordContent" class="glass-modal rounded-[2.8rem] shadow-2xl w-[98%] max-w-[530px] p-9 relative transform transition-all border border-white/50 max-h-[94vh] overflow-y-auto no-scrollbar mx-auto">
             
             <button onclick="closeAddRecordModal()" class="absolute top-6 right-6 w-10 h-10 flex items-center justify-center bg-slate-100 hover:bg-slate-200 active:bg-slate-300 rounded-full text-slate-500 transition-colors z-10 shadow-sm">
@@ -218,21 +218,21 @@
             
             <form id="recordForm" class="space-y-6">
                 <div class="space-y-5">
-                    <div class="bg-slate-50 p-3 rounded-2xl flex flex-col gap-3 border border-slate-100 shadow-sm">
-                        <div class="relative flex items-center">
-                            <span class="absolute left-4 text-slate-400 pointer-events-none flex items-center justify-center">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    <div class="bg-slate-50 rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                        <div class="relative flex items-center px-4 py-4.5">
+                            <span class="text-slate-400 mr-3 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                             </span>
                             <input type="text" id="name" required="required" placeholder="Customer / Field Name" 
-                                class="w-full pl-14 pr-4 py-4.5 bg-transparent border-none focus:ring-0 outline-none text-lg font-bold text-slate-700 placeholder-slate-400" />
+                                class="w-full bg-transparent border-none focus:ring-0 outline-none text-lg font-bold text-slate-700 placeholder-slate-400" />
                         </div>
-                        <div class="h-[1px] bg-slate-100 mx-3"></div>
-                        <div class="relative flex items-center">
-                            <span class="absolute left-4 text-slate-400 pointer-events-none flex items-center justify-center">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <div class="h-[1px] bg-slate-100 mx-4"></div>
+                        <div class="relative flex items-center px-4 py-4.5">
+                            <span class="text-slate-400 mr-3 flex items-center justify-center shrink-0">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                             </span>
                             <input type="text" id="location" required="required" placeholder="Location" 
-                                class="w-full pl-14 pr-4 py-4.5 bg-transparent border-none focus:ring-0 outline-none text-lg font-bold text-slate-700 placeholder-slate-400" />
+                                class="w-full bg-transparent border-none focus:ring-0 outline-none text-lg font-bold text-slate-700 placeholder-slate-400" />
                         </div>
                     </div>
 
@@ -240,7 +240,7 @@
                         <label class="block text-sm font-extrabold text-slate-500 mb-2 ml-2 uppercase tracking-wider">Date</label>
                         <div class="flex justify-center">
                             <input type="date" id="date" required="required" 
-                                class="w-full max-w-[260px] px-4 py-4 bg-slate-50 border border-slate-200 rounded-[1.3rem] focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-lg font-bold text-slate-700 shadow-sm box-border text-center" />
+                                class="w-full max-w-[280px] px-4 py-4 bg-slate-50 border border-slate-200 rounded-[1.3rem] focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-lg font-bold text-slate-700 shadow-sm box-border text-center" />
                         </div>
                     </div>
 
@@ -264,7 +264,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-extrabold text-slate-500 mb-2 ml-2 uppercase tracking-wider">Advance / Received</label>
+                        <label class="block text-sm font-extrabold text-slate-500 mb-2 ml-2 uppercase tracking-wider">Advance / Amount Received</label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-4.5 flex items-center text-slate-400 text-lg font-bold">Rs.</span>
                             <input type="number" id="paid" min="0" step="1" placeholder="0" inputmode="numeric"
@@ -282,7 +282,7 @@
         </div>
     </div>
 
-    <div id="alertModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-all duration-300">
+    <div id="alertModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 transition-all duration-300">
         <div id="alertContent" class="glass-modal rounded-[1.8rem] shadow-2xl max-w-xs w-full p-5 text-center transform transition-all border border-white/50">
             <div class="w-11 h-11 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-3">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
@@ -293,7 +293,7 @@
         </div>
     </div>
 
-    <div id="confirmModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-all duration-300">
+    <div id="confirmModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 transition-all duration-300">
         <div id="confirmContent" class="glass-modal rounded-[1.8rem] shadow-2xl max-w-xs w-full p-5 text-center transform transition-all border border-white/50">
             <div class="w-11 h-11 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -307,7 +307,7 @@
         </div>
     </div>
 
-    <div id="passwordModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-all duration-300">
+    <div id="passwordModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 transition-all duration-300">
         <div id="passwordContent" class="glass-modal rounded-[1.8rem] shadow-2xl max-w-xs w-full p-5 text-center transform transition-all border border-white/50">
             <div class="w-11 h-11 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
@@ -325,7 +325,7 @@
         </div>
     </div>
 
-    <div id="paymentModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-all duration-300">
+    <div id="paymentModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 transition-all duration-300">
         <div id="paymentContent" class="glass-modal rounded-[1.8rem] shadow-2xl max-w-xs w-full p-5 text-center transform transition-all border border-white/50">
             <div class="w-11 h-11 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-3">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -346,7 +346,7 @@
         </div>
     </div>
 
-    <div id="historyModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-all duration-300">
+    <div id="historyModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 transition-all duration-300">
         <div id="historyContent" class="glass-modal rounded-[1.8rem] shadow-2xl max-w-xs w-full p-5 relative transform transition-all border border-white/50 max-h-[75vh] flex flex-col">
             <button onclick="closeHistoryModal()" class="absolute top-4 right-4 w-7 h-7 flex items-center justify-center bg-slate-100 hover:bg-slate-200 active:bg-slate-300 rounded-full text-slate-500 transition-colors z-10 shadow-sm">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -383,7 +383,7 @@
 
         document.getElementById('date').valueAsDate = new Date();
 
-        // Helper function to animate modal opening with smooth pop-in and backdrop fade-in
+        // Helper function to animate modal opening with smooth pop-in and smooth black backdrop fade-in
         window.openAnimatedModal = function(modalId, contentId, focusElementId) {
             const modal = document.getElementById(modalId);
             const content = document.getElementById(contentId);
@@ -403,7 +403,7 @@
             }
         };
 
-        // Helper function to animate modal closing with smooth pop-out and backdrop fade-out
+        // Helper function to animate modal closing with smooth pop-out and smooth black backdrop fade-out
         window.closeAnimatedModal = function(modalId, contentId, callback) {
             const modal = document.getElementById(modalId);
             const content = document.getElementById(contentId);
