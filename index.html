@@ -42,10 +42,22 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
+        *, *::before, *::after {
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        input, textarea {
+            -webkit-user-select: text !important;
+            user-select: text !important;
+        }
+
         img {
             -webkit-user-drag: none;
             user-drag: none;
             pointer-events: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         body {
