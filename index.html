@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>KUBO</title>
+    <link rel="icon" type="image/jpeg" href="Gemini_Generated_Image_hkfvm9hkfvm9hkfv.jpg">
+    <link rel="apple-touch-icon" href="Gemini_Generated_Image_hkfvm9hkfvm9hkfv.jpg">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -146,20 +149,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
                         </svg>
                     </button>
-
-                    <div class="bg-white/20 p-2.5 rounded-2xl backdrop-blur-sm">
-                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m10 11 11 .9c.6 0 .9.5.8 1.1l-.8 5h-1"></path>
-                            <path d="M16 18h-5"></path>
-                            <path d="M18 5a1 1 0 0 0-1 1v5.573"></path>
-                            <path d="M3 4h9l1 7.246"></path>
-                            <path d="M4 11V4"></path>
-                            <path d="M7 15h.01"></path>
-                            <path d="M8 10.1V4"></path>
-                            <circle cx="18" cy="18" r="2"></circle>
-                            <circle cx="7" cy="15" r="5"></circle>
-                        </svg>
-                    </div>
                 </div>
             </div>
         </header>
@@ -413,10 +402,44 @@
 
         document.getElementById('date').valueAsDate = new Date();
 
-        // Check local storage theme on load for instantaneous rendering
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBujfSoOSroRCiOw_z-CY1oOzlN5e5yxBw",
+            authDomain: "kubo-1f79d.firebaseapp.com",
+            projectId: "kubo-1f79d",
+            storageBucket: "kubo-1f79d.firebasestorage.app",
+            messagingSenderId: "1080663216638",
+            appId: "1:1080663216638:web:763344bfcdd350f9edf0af",
+            measurementId: "G-GS42YHG8VB"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+
+        // Immediate check from local storage to prevent any white screen flicker
         const savedLocalTheme = localStorage.getItem('kubo_theme_dark');
         if (savedLocalTheme === 'true') {
             applyTheme(true);
+        } else if (savedLocalTheme === 'false') {
+            applyTheme(false);
+        }
+
+        // Connect directly to Firebase global settings on load to restore saved theme
+        try {
+            const themeDocRef = doc(db, 'kubo_settings', 'theme');
+            onSnapshot(themeDocRef, (snap) => {
+                if (snap.exists()) {
+                    const data = snap.data();
+                    if (typeof data.darkMode === 'boolean') {
+                        applyTheme(data.darkMode);
+                    }
+                }
+            }, (err) => {
+                console.log("Initial theme sync note:", err.message);
+            });
+        } catch (e) {
+            console.warn("Could not attach initial theme listener:", e);
         }
 
         function applyTheme(isDark) {
@@ -441,10 +464,10 @@
             applyTheme(nextMode);
             renderRecords(); // Re-render to refresh dynamic colors if any
 
-            // Sync with Firebase Firestore
-            if (db && userId) {
+            // Sync with Firebase Firestore globally so it persists for all logins
+            if (db) {
                 try {
-                    const settingsRef = doc(db, 'kubo_user_preferences', userId);
+                    const settingsRef = doc(db, 'kubo_settings', 'theme');
                     await setDoc(settingsRef, {
                         darkMode: nextMode,
                         updatedAt: new Date().toISOString()
@@ -529,21 +552,6 @@
         };
 
         async function initCloud() {
-            const firebaseConfig = {
-                apiKey: "AIzaSyBujfSoOSroRCiOw_z-CY1oOzlN5e5yxBw",
-                authDomain: "kubo-1f79d.firebaseapp.com",
-                projectId: "kubo-1f79d",
-                storageBucket: "kubo-1f79d.firebasestorage.app",
-                messagingSenderId: "1080663216638",
-                appId: "1:1080663216638:web:763344bfcdd350f9edf0af",
-                measurementId: "G-GS42YHG8VB"
-            };
-
-            const app = initializeApp(firebaseConfig);
-            getAnalytics(app);
-            db = getFirestore(app);
-            auth = getAuth(app);
-
             try {
                 await signInAnonymously(auth);
                 userId = auth.currentUser?.uid;
@@ -557,8 +565,8 @@
 
             // Listen to Theme Preferences from Firestore
             try {
-                const prefDocRef = doc(db, 'kubo_user_preferences', userId);
-                onSnapshot(prefDocRef, (snap) => {
+                const themeDocRef = doc(db, 'kubo_settings', 'theme');
+                onSnapshot(themeDocRef, (snap) => {
                     if (snap.exists()) {
                         const data = snap.data();
                         if (typeof data.darkMode === 'boolean') {
