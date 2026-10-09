@@ -69,15 +69,35 @@
             animation: modalPopOut 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* Smooth Backdrop Animations with black fade */
+        /* Smooth Backdrop Animations with black fade and blur */
         @keyframes backdropFadeIn {
-            from { opacity: 0; background-color: rgba(15, 23, 42, 0); }
-            to { opacity: 1; background-color: rgba(15, 23, 42, 0.6); }
+            from { 
+                opacity: 0; 
+                background-color: rgba(15, 23, 42, 0);
+                backdrop-filter: blur(0px);
+                -webkit-backdrop-filter: blur(0px);
+            }
+            to { 
+                opacity: 1; 
+                background-color: rgba(15, 23, 42, 0.35);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+            }
         }
 
         @keyframes backdropFadeOut {
-            from { opacity: 1; background-color: rgba(15, 23, 42, 0.6); }
-            to { opacity: 0; background-color: rgba(15, 23, 42, 0); }
+            from { 
+                opacity: 1; 
+                background-color: rgba(15, 23, 42, 0.35);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+            }
+            to { 
+                opacity: 0; 
+                background-color: rgba(15, 23, 42, 0);
+                backdrop-filter: blur(0px);
+                -webkit-backdrop-filter: blur(0px);
+            }
         }
 
         .animate-backdrop-in {
@@ -255,12 +275,10 @@
                     </div>
                 </div>
 
-                <div class="w-full flex justify-center">
-                    <div class="w-4/5">
-                        <label class="block text-[11px] font-extrabold text-slate-500 dark:text-slate-400 mb-2 ml-1.5 uppercase tracking-wider">Date</label>
-                        <input type="date" id="date" required="required" 
-                            class="w-full px-5 py-4 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-[1.3rem] focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all text-[14px] font-bold text-slate-700 dark:text-slate-100 shadow-sm box-border" />
-                    </div>
+                <div>
+                    <label class="block text-[11px] font-extrabold text-slate-500 dark:text-slate-400 mb-2 ml-1.5 uppercase tracking-wider">Date</label>
+                    <input type="date" id="date" required="required" 
+                        class="w-4/5 px-5 py-4 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-[1.3rem] focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all text-[14px] font-bold text-slate-700 dark:text-slate-100 shadow-sm box-border" />
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
