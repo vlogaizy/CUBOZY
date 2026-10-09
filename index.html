@@ -205,8 +205,8 @@
         <div class="absolute -bottom-24 left-1/4 w-[28rem] h-[28rem] rounded-full bg-emerald-300/25 dark:bg-teal-900/20 blur-[110px] anim-orb-3"></div>
     </div>
 
-    <!-- Circular Spinner Loading Screen with Blurred Home Page Background -->
-    <div id="startupLoader" class="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-slate-900/10 dark:bg-black/30 backdrop-blur-md transition-opacity duration-700 pointer-events-auto">
+    <!-- Circular Spinner Loading Screen with Frosted Blur Background -->
+    <div id="startupLoader" class="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-slate-900/20 dark:bg-black/40 backdrop-blur-lg transition-opacity duration-700 pointer-events-auto">
         <div class="relative flex items-center justify-center">
             <div class="w-16 h-16 rounded-full bg-emerald-500/20 blur-xl absolute pointer-events-none"></div>
             <div class="w-12 h-12 border-4 border-emerald-500/25 dark:border-emerald-400/25 border-t-emerald-600 dark:border-t-emerald-400 rounded-full animate-spin"></div>
@@ -727,12 +727,48 @@
 
         enableIndexedDbPersistence(db).catch(() => {});
 
-        window.showBlurLoader = function(duration = 2000) {
+        let lastGrandTotal = 0;
+        let lastTotalPaid = 0;
+        let lastTotalDue = 0;
+        let lastTotalWorks = 0;
+        let targetStats = { grandTotal: 0, totalPaid: 0, totalDue: 0, totalWorks: 0 };
+
+        function animateCount(elem, fromVal, toVal, duration = 1100, isCurrency = true, dec = true) {
+            if (!elem) return;
+            const startTime = performance.now();
+            function step(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // Snappy cubic ease-out curve for fast initial acceleration
+                const ease = 1 - Math.pow(1 - progress, 3);
+                const currentVal = fromVal + (toVal - fromVal) * ease;
+                elem.innerText = isCurrency ? formatCurrency(currentVal, dec) : `${Math.round(currentVal)} Works`;
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    elem.innerText = isCurrency ? formatCurrency(toVal, dec) : `${toVal} Works`;
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        window.triggerStatsCounterAnimation = function() {
+            animateCount(grandTotalDisplay, 0, targetStats.grandTotal, 1100, true, true);
+            animateCount(totalPaidDisplay, 0, targetStats.totalPaid, 1100, true, true);
+            animateCount(totalDueDisplay, 0, targetStats.totalDue, 1100, true, true);
+            animateCount(totalRecordsDisplay, 0, targetStats.totalWorks, 900, false, false);
+            lastGrandTotal = targetStats.grandTotal;
+            lastTotalPaid = targetStats.totalPaid;
+            lastTotalDue = targetStats.totalDue;
+            lastTotalWorks = targetStats.totalWorks;
+        };
+
+        window.showBlurLoader = function(duration = 2000, onComplete = null) {
             let loader = document.getElementById('startupLoader');
             if (!loader) {
                 loader = document.createElement('div');
                 loader.id = 'startupLoader';
-                loader.className = 'fixed inset-0 z-[300] flex flex-col items-center justify-center bg-slate-900/10 dark:bg-black/30 backdrop-blur-md transition-opacity duration-700 pointer-events-auto';
+                loader.className = 'fixed inset-0 z-[300] flex flex-col items-center justify-center bg-slate-900/20 dark:bg-black/40 backdrop-blur-lg transition-opacity duration-700 pointer-events-auto';
                 loader.innerHTML = `
                     <div class="relative flex items-center justify-center">
                         <div class="w-16 h-16 rounded-full bg-emerald-500/20 blur-xl absolute pointer-events-none"></div>
@@ -748,7 +784,13 @@
             setTimeout(() => {
                 loader.style.opacity = '0';
                 loader.style.pointerEvents = 'none';
-                setTimeout(() => loader.classList.add('hidden'), 700);
+                if (typeof onComplete === 'function') {
+                    onComplete();
+                }
+                setTimeout(() => {
+                    loader.classList.add('hidden');
+                    window.triggerStatsCounterAnimation();
+                }, 700);
             }, duration);
         };
 
@@ -759,7 +801,10 @@
                 if (loader) {
                     loader.style.opacity = '0';
                     loader.style.pointerEvents = 'none';
-                    setTimeout(() => loader.classList.add('hidden'), 700);
+                    setTimeout(() => {
+                        loader.classList.add('hidden');
+                        window.triggerStatsCounterAnimation();
+                    }, 700);
                 }
                 initialStartupDone = true;
                 if (!auth.currentUser) {
@@ -939,34 +984,56 @@
             });
         };
 
+        function resetLoginForm() {
+            const submitBtn = document.getElementById('authSubmitBtn');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span id="authSubmitBtnText">${currentAuthMode === 'signup' ? 'Sign Up' : 'Sign In'}</span>`;
+            }
+            const authError = document.getElementById('authError');
+            if (authError) {
+                authError.innerText = '';
+                authError.classList.add('opacity-0');
+            }
+        }
+
         onAuthStateChanged(auth, (user) => {
             const loginScreen = document.getElementById('loginScreen');
             const loginCard = document.getElementById('loginCard');
-            const submitBtn = document.getElementById('authSubmitBtn');
-            const submitText = document.getElementById('authSubmitBtnText');
 
             if (user) {
                 userId = user.uid;
-                if (loginCard) {
-                    loginCard.classList.remove('animate-modal-in');
-                    loginCard.classList.add('animate-modal-out');
-                }
-                if (loginScreen) {
-                    loginScreen.style.opacity = '0';
-                    setTimeout(() => loginScreen.classList.add('hidden'), 300);
-                }
-                if (initialStartupDone) {
-                    window.showBlurLoader(2000);
-                }
                 initCloudSync();
+
+                const isLoginVisible = loginScreen && !loginScreen.classList.contains('hidden') && loginScreen.style.opacity !== '0';
+
+                if (isLoginVisible && initialStartupDone) {
+                    // Show spinner with login interface blurred in background for 2 seconds
+                    window.showBlurLoader(2000, () => {
+                        if (loginCard) {
+                            loginCard.classList.remove('animate-modal-in');
+                            loginCard.classList.add('animate-modal-out');
+                        }
+                        if (loginScreen) {
+                            loginScreen.style.opacity = '0';
+                            setTimeout(() => {
+                                loginScreen.classList.add('hidden');
+                                resetLoginForm();
+                            }, 500);
+                        }
+                    });
+                } else {
+                    if (loginScreen) {
+                        loginScreen.classList.add('hidden');
+                        loginScreen.style.opacity = '0';
+                    }
+                    resetLoginForm();
+                }
             } else {
                 userId = null;
                 records = [];
                 renderRecords();
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = `<span id="authSubmitBtnText">${currentAuthMode === 'signup' ? 'Sign Up' : 'Sign In'}</span>`;
-                }
+                resetLoginForm();
                 if (initialStartupDone && loginScreen) {
                     loginScreen.classList.remove('hidden');
                     requestAnimationFrame(() => { loginScreen.style.opacity = '1'; });
@@ -1094,7 +1161,7 @@
             renderRecords();
         };
 
-        function renderRecords() {
+        function renderRecords(forceReset = false) {
             recordsList.innerHTML = '';
             let grandTotal = 0, totalPaid = 0, totalDue = 0;
             records.forEach(r => {
@@ -1102,10 +1169,34 @@
                 const paid = r.paidAmount || 0;
                 grandTotal += tot; totalPaid += paid; totalDue += (tot - paid);
             });
-            grandTotalDisplay.innerText = formatCurrency(grandTotal, true);
-            totalRecordsDisplay.innerText = `${records.length} Works`;
-            totalPaidDisplay.innerText = formatCurrency(totalPaid, true);
-            totalDueDisplay.innerText = formatCurrency(totalDue, true);
+
+            targetStats = {
+                grandTotal,
+                totalPaid,
+                totalDue,
+                totalWorks: records.length
+            };
+
+            const loader = document.getElementById('startupLoader');
+            const isLoaderActive = loader && !loader.classList.contains('hidden') && loader.style.opacity !== '0';
+
+            if (forceReset) {
+                window.triggerStatsCounterAnimation();
+            } else if (!isLoaderActive) {
+                animateCount(grandTotalDisplay, lastGrandTotal, grandTotal, 800, true, true);
+                animateCount(totalPaidDisplay, lastTotalPaid, totalPaid, 800, true, true);
+                animateCount(totalDueDisplay, lastTotalDue, totalDue, 800, true, true);
+                animateCount(totalRecordsDisplay, lastTotalWorks, records.length, 700, false, false);
+                lastGrandTotal = grandTotal;
+                lastTotalPaid = totalPaid;
+                lastTotalDue = totalDue;
+                lastTotalWorks = records.length;
+            } else {
+                grandTotalDisplay.innerText = formatCurrency(0, true);
+                totalPaidDisplay.innerText = formatCurrency(0, true);
+                totalDueDisplay.innerText = formatCurrency(0, true);
+                totalRecordsDisplay.innerText = "0 Works";
+            }
 
             const filtered = records.filter(r => {
                 const tot = r.acres * r.price;
