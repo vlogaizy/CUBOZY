@@ -207,7 +207,7 @@
         }
     </style>
 </head>
-<body oncontextmenu="return false;" class="min-h-screen flex justify-center items-start sm:items-center py-2 sm:py-6 px-1.5 sm:px-0 selection:bg-transparent">
+<body class="min-h-screen flex justify-center items-start sm:items-center py-2 sm:py-6 px-1.5 sm:px-0 selection:bg-emerald-200 dark:selection:bg-emerald-700/50 text-slate-800 dark:text-slate-200">
 
     <div id="loginScreen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-all duration-500">
         <div class="absolute top-0 w-full h-1/2 bg-gradient-to-br from-emerald-950 via-emerald-900 to-green-950 rounded-b-[3rem] shadow-xl"></div>
@@ -389,7 +389,8 @@
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path></svg>
                         </span>
-                        <input type="text" id="recordSearchInput" oninput="handleSearch(this.value)" placeholder="Search..."
+                        <input type="text" id="recordSearchInput" name="kubo_search_query" oninput="handleSearch(this.value)" placeholder="Search..."
+                            autocomplete="new-password" data-lpignore="true" spellcheck="false" autocorrect="off"
                             class="w-full pl-8 pr-7 py-2 bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:ring-2 focus:ring-emerald-700 shadow-sm transition-all" />
                         <button type="button" id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold">
                             ✕
@@ -1683,9 +1684,19 @@
             }
         });
 
-        // Global protection against right-click, copy, drag, and cut
-        document.addEventListener('contextmenu', (e) => e.preventDefault());
-        document.addEventListener('dragstart', (e) => e.preventDefault());
+        // Global protection against right-click, copy, drag, and cut (ALLOWED on inputs)
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+                return; // allow right-click menu on inputs
+            }
+            e.preventDefault();
+        });
+        document.addEventListener('dragstart', (e) => {
+            if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+                return; 
+            }
+            e.preventDefault();
+        });
         document.addEventListener('copy', (e) => {
             const active = document.activeElement;
             if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) {
