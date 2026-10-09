@@ -7,10 +7,22 @@
     <link rel="icon" type="image/png" href="KUBO_ICON.png">
     <link rel="apple-touch-icon" href="KUBO_ICON.png">
     
+    <script>
+        // Pre-define window.tailwind to prevent ReferenceError if CDN script loads asynchronously
+        window.tailwind = window.tailwind || {};
+        window.tailwind.config = {
+            darkMode: 'class'
+        };
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            darkMode: 'class'
+        try {
+            if (window.tailwind) {
+                window.tailwind.config = window.tailwind.config || {};
+                window.tailwind.config.darkMode = 'class';
+            }
+        } catch (e) {
+            console.debug("Tailwind config init:", e);
         }
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -120,6 +132,22 @@
             border-color: rgba(255, 255, 255, 0.08);
             color: #f8fafc;
         }
+
+        /* Smooth transition animation for switching between Sign In & Create Account */
+        @keyframes modeSwitchFadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(10px) scale(0.98);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .animate-mode-switch {
+            animation: modeSwitchFadeSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
     </style>
 </head>
 <body class="min-h-screen flex justify-center selection:bg-emerald-900 selection:text-white">
@@ -127,19 +155,72 @@
     <div id="loginScreen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-all duration-500">
         <div class="absolute top-0 w-full h-1/2 bg-gradient-to-br from-emerald-950 via-emerald-900 to-green-950 rounded-b-[3rem] shadow-xl"></div>
         
-        <div id="loginCard" class="z-10 bg-white dark:bg-slate-900 p-7 rounded-[2.2rem] shadow-2xl shadow-green-900/20 w-11/12 max-w-[320px] text-center border border-slate-100 dark:border-slate-800 animate-modal-in transform scale-[0.95]">
-            <img src="https://raw.githubusercontent.com/vlogaizy/KUBO/main/KUBO_LOGO.png" alt="KUBO Logo" class="h-16 mx-auto mb-3.5 object-cover rounded-xl" />
-            <p class="text-emerald-700 dark:text-emerald-400 text-xs font-bold mb-5 mt-0.5">Cloud Secure Access</p>
+        <div id="loginCard" class="z-10 bg-white dark:bg-slate-900 p-7 rounded-[2.2rem] shadow-2xl shadow-green-900/20 w-11/12 max-w-[340px] text-center border border-slate-100 dark:border-slate-800 animate-modal-in transform scale-[0.95]">
+            <img src="https://raw.githubusercontent.com/vlogaizy/KUBO/main/KUBO_LOGO.png" alt="KUBO Logo" class="h-16 mx-auto mb-2.5 object-cover rounded-xl" />
             
-            <input type="password" id="loginPin" placeholder="Enter PIN" inputmode="numeric" maxlength="4"
-                oninput="hideLoginError()"
-                class="w-full px-4 py-3.5 mb-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[1.3rem] focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition-all text-center text-xl font-bold text-slate-700 dark:text-slate-100 tracking-[0.4em] shadow-sm" />
-            <p id="loginError" class="text-red-500 text-xs font-bold mb-3.5 h-4 opacity-0 transition-opacity">Incorrect PIN.</p>
-            
-            <button onclick="handleLogin()" id="loginBtn" class="w-full bg-gradient-to-r from-emerald-900 to-green-950 text-white font-extrabold py-3.5 rounded-[1.3rem] active:scale-[0.98] transition-all shadow-xl shadow-emerald-950/30 flex justify-center items-center gap-2 text-base">
-                <span>Login securely</span>
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-            </button>
+            <!-- Auth Form Container with Transition Animation -->
+            <div id="authFormContainer">
+                <h3 id="authTitle" class="text-xl font-extrabold text-slate-800 dark:text-white tracking-tight">Welcome Back</h3>
+                <p id="authSubtitle" class="text-emerald-700 dark:text-emerald-400 text-xs font-bold mb-4 mt-0.5">Cloud Secure Sign In</p>
+                
+                <!-- Mode Switch Tabs -->
+                <div class="relative bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl flex mb-4 border border-slate-200/50 dark:border-slate-700/60">
+                    <div id="tabIndicator" class="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-white dark:bg-slate-700 rounded-xl shadow-sm transition-transform duration-300 ease-out"></div>
+                    <button type="button" onclick="switchAuthMode('signin')" id="tabSignInBtn" class="relative z-10 flex-1 py-2 text-xs font-bold transition-colors text-slate-800 dark:text-white">
+                        Sign In
+                    </button>
+                    <button type="button" onclick="switchAuthMode('signup')" id="tabSignUpBtn" class="relative z-10 flex-1 py-2 text-xs font-bold transition-colors text-slate-500 dark:text-slate-400">
+                        Sign Up
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form Content with animated mode switch container -->
+            <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-3">
+                <div id="authFieldsWrapper" class="space-y-2.5 animate-mode-switch">
+                    <!-- Email input -->
+                    <div class="relative flex items-center">
+                        <span class="text-slate-400 dark:text-slate-500 absolute left-4 flex items-center justify-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path></svg>
+                        </span>
+                        <input type="email" id="authEmail" required placeholder="Email Address" oninput="hideAuthError()"
+                            class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition-all text-xs font-bold text-slate-700 dark:text-slate-100 shadow-sm" />
+                    </div>
+
+                    <!-- Password input -->
+                    <div class="relative flex items-center">
+                        <span class="text-slate-400 dark:text-slate-500 absolute left-4 flex items-center justify-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        </span>
+                        <input type="password" id="authPassword" required minlength="6" placeholder="Password" oninput="hideAuthError()"
+                            class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition-all text-xs font-bold text-slate-700 dark:text-slate-100 shadow-sm" />
+                    </div>
+
+                    <!-- Confirm Password input (Visible only in Sign Up mode) -->
+                    <div id="confirmPasswordGroup" class="relative hidden items-center">
+                        <span class="text-slate-400 dark:text-slate-500 absolute left-4 flex items-center justify-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        </span>
+                        <input type="password" id="authConfirmPassword" minlength="6" placeholder="Confirm Password" oninput="hideAuthError()"
+                            class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition-all text-xs font-bold text-slate-700 dark:text-slate-100 shadow-sm" />
+                    </div>
+                </div>
+
+                <!-- Forgot Password Button (Sign In mode only) -->
+                <div id="forgotPasswordWrap" class="text-right">
+                    <button type="button" onclick="openForgotPasswordModal()" class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 hover:underline">
+                        Forgot Password?
+                    </button>
+                </div>
+
+                <!-- Error Message -->
+                <p id="authError" class="text-red-500 dark:text-red-400 text-xs font-bold min-h-[1.25rem] opacity-0 transition-opacity px-1 text-center leading-snug"></p>
+                
+                <!-- Submit Button without right arrow icon -->
+                <button type="submit" id="authSubmitBtn" class="w-full bg-gradient-to-r from-emerald-900 to-green-950 text-white font-extrabold py-3.5 rounded-[1.3rem] active:scale-[0.98] transition-all shadow-xl shadow-emerald-950/30 flex justify-center items-center gap-2 text-sm">
+                    <span id="authSubmitBtnText">Sign In</span>
+                </button>
+            </form>
         </div>
     </div>
 
@@ -194,6 +275,14 @@
                         <!-- Sun Icon (displayed in Dark Mode) -->
                         <svg id="sunIcon" class="w-6 h-6 hidden text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Logout Button -->
+                    <button onclick="handleLogout()" aria-label="Log Out" title="Log Out"
+                        class="bg-white/20 dark:bg-slate-800 hover:bg-red-500/30 active:scale-95 p-2.5 rounded-2xl backdrop-blur-sm text-white transition-all shadow-sm">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                         </svg>
                     </button>
                 </div>
@@ -370,6 +459,58 @@
         </div>
     </div>
 
+    <div id="logoutModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 transition-all duration-300">
+        <div id="logoutContent" class="glass-modal rounded-[1.8rem] shadow-2xl max-w-xs w-full p-5 text-center transform transition-all border border-white/50">
+            <div class="w-11 h-11 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-1">Sign Out</h3>
+            <p class="text-slate-500 dark:text-slate-400 text-xs mb-5 font-medium">Are you sure you want to sign out? Your records are safely saved in the cloud.</p>
+            <div class="flex gap-2.5">
+                <button onclick="closeLogoutModal()" class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold py-3 rounded-xl active:bg-slate-200 dark:active:bg-slate-700 transition-colors text-sm">Cancel</button>
+                <button onclick="confirmSignOut()" class="flex-1 bg-gradient-to-r from-emerald-800 to-green-900 text-white font-bold py-3 rounded-xl active:from-emerald-900 active:to-green-950 transition-colors shadow-md shadow-emerald-950/20 text-sm">Sign Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dedicated Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-4 transition-all duration-300">
+        <div id="forgotPasswordContent" class="glass-modal rounded-[1.8rem] shadow-2xl max-w-xs w-full p-6 text-center transform transition-all border border-white/50">
+            <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-1">Reset Password</h3>
+            <p class="text-slate-500 dark:text-slate-400 text-xs mb-4 font-medium leading-relaxed">
+                Enter your registered email address and we'll send you a password reset link.
+            </p>
+
+            <form onsubmit="event.preventDefault(); submitForgotPassword();">
+                <div class="relative flex items-center mb-2">
+                    <span class="text-slate-400 dark:text-slate-500 absolute left-3.5 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path></svg>
+                    </span>
+                    <input type="email" id="resetEmailInput" placeholder="Enter your email" oninput="hideResetPasswordError()"
+                        class="w-full pl-10 pr-3.5 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700 outline-none transition-all text-xs font-bold text-slate-700 dark:text-slate-100 shadow-sm" />
+                </div>
+
+                <p id="resetPasswordMsg" class="text-xs font-bold min-h-[1.25rem] mb-3 opacity-0 transition-opacity px-1"></p>
+
+                <div class="flex gap-2.5">
+                    <button type="button" onclick="closeForgotPasswordModal()" class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold py-3 rounded-xl active:bg-slate-200 dark:active:bg-slate-700 transition-colors text-xs">
+                        Cancel
+                    </button>
+                    <button type="submit" id="sendResetBtn" class="flex-1 bg-gradient-to-r from-emerald-800 to-green-900 text-white font-bold py-3 rounded-xl active:from-emerald-900 active:to-green-950 transition-colors shadow-md shadow-emerald-950/20 text-xs flex items-center justify-center gap-1.5">
+                        <span id="sendResetBtnText">Send Link</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="passwordModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 transition-all duration-300">
         <div id="passwordContent" class="glass-modal rounded-[1.8rem] shadow-2xl max-w-xs w-full p-5 text-center transform transition-all border border-white/50">
             <div class="w-11 h-11 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -429,7 +570,14 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-analytics.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            onAuthStateChanged, 
+            signOut, 
+            sendPasswordResetEmail 
+        } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
         import { getFirestore, doc, addDoc, updateDoc, deleteDoc, onSnapshot, collection, setDoc, getDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
         let records = [];
@@ -438,6 +586,8 @@
         let activePaymentRecordIndex = null;
         let activeHistoryRecordIndex = null;
         let isDarkMode = false;
+        let currentAuthMode = 'signin'; // 'signin' or 'signup'
+        let unsubscribeRecords = null;
 
         const form = document.getElementById('recordForm');
         const recordsList = document.getElementById('recordsList');
@@ -464,7 +614,7 @@
         db = getFirestore(app);
         auth = getAuth(app);
 
-        // Enable offline persistence so Firestore operates instantly even under poor connectivity
+        // Enable offline persistence
         enableIndexedDbPersistence(db).catch((err) => {
             if (err.code === 'failed-precondition') {
                 console.warn('Multiple tabs open; persistence enabled in first tab only.');
@@ -473,7 +623,7 @@
             }
         });
 
-        // Immediate check from local storage to prevent any white screen flicker
+        // Theme management
         const savedLocalTheme = localStorage.getItem('kubo_theme_dark');
         if (savedLocalTheme === 'true') {
             applyTheme(true);
@@ -481,7 +631,6 @@
             applyTheme(false);
         }
 
-        // Connect directly to Firebase global settings on load to restore saved theme
         try {
             const themeDocRef = doc(db, 'kubo_settings', 'theme');
             onSnapshot(themeDocRef, (snap) => {
@@ -491,12 +640,9 @@
                         applyTheme(data.darkMode);
                     }
                 }
-            }, (err) => {
-                // Non-blocking log for offline/latency warnings
-                console.debug("Initial theme sync status:", err.message);
-            });
+            }, (err) => console.debug("Theme sync status:", err.message));
         } catch (e) {
-            console.warn("Could not attach initial theme listener:", e);
+            console.warn("Theme listener error:", e);
         }
 
         function applyTheme(isDark) {
@@ -519,9 +665,8 @@
         window.toggleDarkMode = async function() {
             const nextMode = !isDarkMode;
             applyTheme(nextMode);
-            renderRecords(); // Re-render to refresh dynamic colors if any
+            renderRecords();
 
-            // Sync with Firebase Firestore globally so it persists for all logins
             if (db) {
                 try {
                     const settingsRef = doc(db, 'kubo_settings', 'theme');
@@ -530,10 +675,295 @@
                         updatedAt: new Date().toISOString()
                     }, { merge: true });
                 } catch (e) {
-                    console.warn("Could not sync dark mode preference to Firestore:", e);
+                    console.warn("Could not sync dark mode:", e);
                 }
             }
         };
+
+        // Switch between Sign In and Create Account with animation
+        window.switchAuthMode = function(mode) {
+            if (currentAuthMode === mode) return;
+            currentAuthMode = mode;
+            window.hideAuthError();
+
+            const tabIndicator = document.getElementById('tabIndicator');
+            const tabSignInBtn = document.getElementById('tabSignInBtn');
+            const tabSignUpBtn = document.getElementById('tabSignUpBtn');
+            const confirmGroup = document.getElementById('confirmPasswordGroup');
+            const forgotWrap = document.getElementById('forgotPasswordWrap');
+            const submitBtnText = document.getElementById('authSubmitBtnText');
+            const authConfirmPassword = document.getElementById('authConfirmPassword');
+            const fieldsWrapper = document.getElementById('authFieldsWrapper');
+
+            // Animate mode fields with re-triggered CSS animation
+            if (fieldsWrapper) {
+                fieldsWrapper.classList.remove('animate-mode-switch');
+                void fieldsWrapper.offsetWidth; // Force DOM reflow to replay animation
+                fieldsWrapper.classList.add('animate-mode-switch');
+            }
+
+            if (mode === 'signup') {
+                if (tabIndicator) tabIndicator.style.transform = 'translateX(100%)';
+                if (tabSignInBtn) tabSignInBtn.className = 'relative z-10 flex-1 py-2 text-xs font-bold transition-colors text-slate-500 dark:text-slate-400';
+                if (tabSignUpBtn) tabSignUpBtn.className = 'relative z-10 flex-1 py-2 text-xs font-bold transition-colors text-slate-800 dark:text-white';
+                
+                if (confirmGroup) {
+                    confirmGroup.classList.remove('hidden');
+                    confirmGroup.classList.add('flex');
+                }
+                if (authConfirmPassword) authConfirmPassword.required = true;
+                if (forgotWrap) forgotWrap.classList.add('hidden');
+                if (submitBtnText) submitBtnText.innerText = 'Sign Up';
+            } else {
+                if (tabIndicator) tabIndicator.style.transform = 'translateX(0)';
+                if (tabSignInBtn) tabSignInBtn.className = 'relative z-10 flex-1 py-2 text-xs font-bold transition-colors text-slate-800 dark:text-white';
+                if (tabSignUpBtn) tabSignUpBtn.className = 'relative z-10 flex-1 py-2 text-xs font-bold transition-colors text-slate-500 dark:text-slate-400';
+                
+                if (confirmGroup) {
+                    confirmGroup.classList.remove('flex');
+                    confirmGroup.classList.add('hidden');
+                }
+                if (authConfirmPassword) authConfirmPassword.required = false;
+                if (forgotWrap) forgotWrap.classList.remove('hidden');
+                if (submitBtnText) submitBtnText.innerText = 'Sign In';
+            }
+        };
+
+        window.hideAuthError = function() {
+            const err = document.getElementById('authError');
+            if (err) err.classList.add('opacity-0');
+        };
+
+        window.showAuthError = function(message) {
+            const err = document.getElementById('authError');
+            if (err) {
+                err.innerText = message;
+                err.classList.remove('opacity-0');
+            }
+        };
+
+        // Handle Email/Password Form Submission
+        window.handleAuthSubmit = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value;
+            const submitBtn = document.getElementById('authSubmitBtn');
+            const submitText = document.getElementById('authSubmitBtnText');
+
+            if (!email || !password) {
+                window.showAuthError("Please provide both email and password.");
+                return;
+            }
+
+            if (currentAuthMode === 'signup') {
+                const confirmPassword = document.getElementById('authConfirmPassword').value;
+                if (password !== confirmPassword) {
+                    window.showAuthError("Passwords do not match.");
+                    return;
+                }
+            }
+
+            submitBtn.disabled = true;
+            const originalText = submitText ? submitText.innerText : (currentAuthMode === 'signup' ? 'Sign Up' : 'Sign In');
+            submitBtn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span id="authSubmitBtnText">Processing...</span>`;
+
+            try {
+                if (currentAuthMode === 'signup') {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                } else {
+                    await signInWithEmailAndPassword(auth, email, password);
+                }
+            } catch (err) {
+                console.warn("Authentication notice:", err.code || err.message);
+                let friendlyMsg = "Authentication failed. Please try again.";
+
+                switch (err.code) {
+                    case 'auth/invalid-credential':
+                    case 'auth/wrong-password':
+                        friendlyMsg = "Incorrect email or password. Please try again.";
+                        break;
+                    case 'auth/user-not-found':
+                        friendlyMsg = "No account found with this email. Please check or Sign Up.";
+                        break;
+                    case 'auth/email-already-in-use':
+                        friendlyMsg = "This email is already registered. Please Sign In.";
+                        break;
+                    case 'auth/weak-password':
+                        friendlyMsg = "Password must be at least 6 characters long.";
+                        break;
+                    case 'auth/invalid-email':
+                        friendlyMsg = "Please enter a valid email address.";
+                        break;
+                    case 'auth/network-request-failed':
+                        friendlyMsg = "Network error. Please check your internet connection.";
+                        break;
+                    case 'auth/too-many-requests':
+                        friendlyMsg = "Too many attempts. Please wait a moment or reset your password.";
+                        break;
+                    case 'auth/operation-not-allowed':
+                        friendlyMsg = "Email/Password sign-in is disabled in Firebase console.";
+                        break;
+                    default:
+                        if (err.message && err.message.length < 80) {
+                            friendlyMsg = err.message.replace("Firebase: ", "").replace(/\(auth\/.*\)\.?/, "").trim();
+                        }
+                        break;
+                }
+
+                window.showAuthError(friendlyMsg);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span id="authSubmitBtnText">${originalText}</span>`;
+            }
+        };
+
+        // Forgot Password Logic with Dedicated Interactive Modal
+        window.openForgotPasswordModal = function() {
+            const loginEmail = document.getElementById('authEmail')?.value.trim() || '';
+            const resetEmailInput = document.getElementById('resetEmailInput');
+            if (resetEmailInput) resetEmailInput.value = loginEmail;
+            window.hideResetPasswordError();
+            window.openAnimatedModal('forgotPasswordModal', 'forgotPasswordContent', 'resetEmailInput');
+        };
+
+        window.closeForgotPasswordModal = function() {
+            window.closeAnimatedModal('forgotPasswordModal', 'forgotPasswordContent', () => {
+                window.hideResetPasswordError();
+            });
+        };
+
+        window.hideResetPasswordError = function() {
+            const msg = document.getElementById('resetPasswordMsg');
+            if (msg) {
+                msg.classList.add('opacity-0');
+                msg.innerText = '';
+            }
+        };
+
+        window.showResetPasswordMsg = function(message, isError = true) {
+            const msg = document.getElementById('resetPasswordMsg');
+            if (msg) {
+                msg.className = `text-xs font-bold min-h-[1.25rem] mb-3 transition-opacity px-1 ${isError ? 'text-red-500 dark:text-red-400' : 'text-emerald-700 dark:text-emerald-400'}`;
+                msg.innerText = message;
+                msg.classList.remove('opacity-0');
+            }
+        };
+
+        window.submitForgotPassword = async function() {
+            const emailInput = document.getElementById('resetEmailInput');
+            const email = emailInput?.value.trim() || '';
+            const sendBtn = document.getElementById('sendResetBtn');
+            const sendBtnText = document.getElementById('sendResetBtnText');
+
+            if (!email) {
+                window.showResetPasswordMsg("Please enter your email address.", true);
+                emailInput?.focus();
+                return;
+            }
+
+            if (!/\S+@\S+\.\S+/.test(email)) {
+                window.showResetPasswordMsg("Please enter a valid email address.", true);
+                emailInput?.focus();
+                return;
+            }
+
+            sendBtn.disabled = true;
+            if (sendBtnText) {
+                sendBtn.innerHTML = `<svg class="animate-spin h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Sending...</span>`;
+            }
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                window.showResetPasswordMsg("Reset link sent! Please check your email inbox and spam folder.", false);
+                setTimeout(() => {
+                    window.closeForgotPasswordModal();
+                }, 2800);
+            } catch (err) {
+                console.warn("Forgot password notice:", err.code || err.message);
+                let errText = "Could not send reset email. Please try again.";
+                if (err.code === 'auth/user-not-found') {
+                    errText = "No account found with this email.";
+                } else if (err.code === 'auth/invalid-email') {
+                    errText = "Please enter a valid email address.";
+                } else if (err.code === 'auth/network-request-failed') {
+                    errText = "Network error. Please check your connection.";
+                } else if (err.code === 'auth/too-many-requests') {
+                    errText = "Too many attempts. Please try again later.";
+                }
+                window.showResetPasswordMsg(errText, true);
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = `<span id="sendResetBtnText">Send Link</span>`;
+            }
+        };
+
+        window.handleLogout = function() {
+            window.openAnimatedModal('logoutModal', 'logoutContent');
+        };
+
+        window.closeLogoutModal = function() {
+            window.closeAnimatedModal('logoutModal', 'logoutContent');
+        };
+
+        window.confirmSignOut = async function() {
+            window.closeAnimatedModal('logoutModal', 'logoutContent', async () => {
+                if (unsubscribeRecords) unsubscribeRecords();
+                await signOut(auth);
+            });
+        };
+
+        // Monitor Firebase Authentication State
+        onAuthStateChanged(auth, (user) => {
+            const loginScreen = document.getElementById('loginScreen');
+            const loginCard = document.getElementById('loginCard');
+            const submitBtn = document.getElementById('authSubmitBtn');
+
+            if (user) {
+                userId = user.uid;
+                loginCard.classList.remove('animate-modal-in');
+                loginCard.classList.add('animate-modal-out');
+                setTimeout(() => {
+                    loginScreen.style.opacity = '0';
+                    setTimeout(() => loginScreen.classList.add('hidden'), 300);
+                }, 200);
+
+                // Start syncing user's records from Firestore
+                initCloudSync();
+            } else {
+                userId = null;
+                records = [];
+                renderRecords();
+                
+                loginScreen.classList.remove('hidden');
+                loginScreen.style.opacity = '1';
+                loginCard.classList.remove('animate-modal-out');
+                loginCard.classList.add('animate-modal-in');
+                
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `<span id="authSubmitBtnText">${currentAuthMode === 'signup' ? 'Sign Up' : 'Sign In'}</span>`;
+                }
+            }
+        });
+
+        function initCloudSync() {
+            if (unsubscribeRecords) unsubscribeRecords();
+            const recordsRef = collection(db, 'cubozy_tractor_works');
+            
+            unsubscribeRecords = onSnapshot(recordsRef, (snapshot) => {
+                records = [];
+                snapshot.forEach((docSnap) => {
+                    records.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                
+                records.sort((a, b) => new Date(b.date) - new Date(a.date));
+                renderRecords();
+            }, (error) => {
+                console.warn("Sync note:", error.message);
+                if (error.code === "permission-denied" || error.message.toLowerCase().includes("permission")) {
+                    window.customAlert("Database Error: Missing permissions. Please update Firestore Security Rules.");
+                }
+            });
+        }
 
         window.openAnimatedModal = function(modalId, contentId, focusElementId) {
             const modal = document.getElementById(modalId);
@@ -571,100 +1001,6 @@
                 if (callback) callback();
             }, 270);
         };
-
-        window.hideLoginError = function() {
-            document.getElementById('loginError').classList.add('opacity-0');
-        };
-
-        window.handleLogin = async function() {
-            const pin = document.getElementById('loginPin').value;
-            const btn = document.getElementById('loginBtn');
-            const err = document.getElementById('loginError');
-            
-            if (pin === '1111') {
-                err.classList.add('opacity-0');
-                btn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Connecting Cloud...</span>`;
-                
-                try {
-                    // Do not block login permanently if Firestore backend handshake takes time
-                    const loginPromise = initCloud();
-                    const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 2500));
-                    await Promise.race([loginPromise, timeoutPromise]);
-
-                    const loginScreen = document.getElementById('loginScreen');
-                    const loginCard = document.getElementById('loginCard');
-                    loginCard.classList.remove('animate-modal-in');
-                    loginCard.classList.add('animate-modal-out');
-                    setTimeout(() => {
-                        loginScreen.style.opacity = '0';
-                        setTimeout(() => loginScreen.classList.add('hidden'), 300);
-                    }, 200);
-                } catch (error) {
-                    console.error("Firebase error:", error);
-                    err.innerText = error.message.includes("permission") ? "Database rules blocking access. See console." : "Connection Failed. Try again.";
-                    err.classList.remove('opacity-0');
-                    btn.innerHTML = `<span>Login securely</span> <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
-                }
-            } else {
-                err.innerText = "Incorrect PIN. Please try again.";
-                err.classList.remove('opacity-0');
-                document.getElementById('loginPin').value = '';
-            }
-        };
-
-        async function initCloud() {
-            try {
-                // Short timeout for anonymous auth to prevent hanging offline
-                await Promise.race([
-                    signInAnonymously(auth),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error("Auth Timeout")), 4000))
-                ]);
-                userId = auth.currentUser?.uid;
-            } catch (authError) {
-                console.warn("Firebase Auth Note (offline or timeout fallback):", authError.message);
-                userId = localStorage.getItem('kubo_local_uid') || crypto.randomUUID();
-                localStorage.setItem('kubo_local_uid', userId);
-            }
-
-            if (!userId) {
-                userId = localStorage.getItem('kubo_local_uid') || 'offline_user';
-            }
-
-            // Listen to Theme Preferences from Firestore
-            try {
-                const themeDocRef = doc(db, 'kubo_settings', 'theme');
-                onSnapshot(themeDocRef, (snap) => {
-                    if (snap.exists()) {
-                        const data = snap.data();
-                        if (typeof data.darkMode === 'boolean') {
-                            applyTheme(data.darkMode);
-                        }
-                    }
-                }, (err) => {
-                    console.debug("Preference sync note:", err.message);
-                });
-            } catch (e) {
-                console.warn("Could not attach preference listener:", e);
-            }
-
-            const recordsRef = collection(db, 'cubozy_tractor_works');
-            
-            onSnapshot(recordsRef, (snapshot) => {
-                records = [];
-                snapshot.forEach((docSnap) => {
-                    records.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                
-                records.sort((a, b) => new Date(b.date) - new Date(a.date));
-                renderRecords();
-            }, (error) => {
-                console.warn("Sync note:", error.message);
-                if (error.code === "permission-denied" || error.message.toLowerCase().includes("permission")) {
-                    window.customAlert("Database Error: Missing permissions. Please update Firestore Security Rules to allow access.");
-                }
-                // If it's unavailable/network latency, offline cache or ongoing retry will handle it automatically
-            });
-        }
 
         window.openAddRecordModal = function() {
             window.openAnimatedModal('addRecordModal', 'addRecordContent', 'name');
@@ -834,8 +1170,12 @@
             });
         }
 
-        const formatCurrency = (amount) => {
-            return 'Rs. ' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const formatCurrency = (amount, decimals = false) => {
+            if (decimals) {
+                return 'Rs. ' + Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+            // For compact card displays, omit trailing .00 if whole number or format with clean locale
+            return 'Rs. ' + Number(amount).toLocaleString('en-US', { maximumFractionDigits: 2 });
         };
         
         window.setFilter = function(filter) {
@@ -869,10 +1209,10 @@
                 totalDueOverall += rowDue;
             });
 
-            grandTotalDisplay.innerText = formatCurrency(grandTotal);
+            grandTotalDisplay.innerText = formatCurrency(grandTotal, true);
             totalRecordsDisplay.innerText = `${records.length} Works`;
-            totalPaidDisplay.innerText = formatCurrency(totalPaidOverall);
-            totalDueDisplay.innerText = formatCurrency(totalDueOverall);
+            totalPaidDisplay.innerText = formatCurrency(totalPaidOverall, true);
+            totalDueDisplay.innerText = formatCurrency(totalDueOverall, true);
 
             const filteredRecords = records.filter(record => {
                 const rowTotal = record.acres * record.price;
@@ -933,18 +1273,18 @@
                             </button>
                         </div>
                         
-                        <div class="grid grid-cols-[1fr_1fr_1.5fr] gap-2 bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-100/50 dark:border-slate-750 mb-2">
-                            <div class="flex flex-col overflow-hidden">
-                                <span class="text-[9px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider truncate">Acres</span>
-                                <span class="font-extrabold text-slate-700 dark:text-slate-200 text-xs mt-0.5 truncate">${record.acres}</span>
+                        <div class="grid grid-cols-[0.8fr_1.1fr_1.1fr] gap-1.5 bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-100/50 dark:border-slate-750 mb-2">
+                            <div class="flex flex-col min-w-0">
+                                <span class="text-[9px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider whitespace-nowrap">Acres</span>
+                                <span class="font-extrabold text-slate-700 dark:text-slate-200 text-xs mt-0.5 whitespace-nowrap">${record.acres}</span>
                             </div>
-                            <div class="flex flex-col border-l border-slate-200 dark:border-slate-700 pl-2 overflow-hidden">
-                                <span class="text-[9px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider truncate">Rate</span>
-                                <span class="font-extrabold text-slate-700 dark:text-slate-200 text-xs mt-0.5 truncate">${formatCurrency(record.price)}</span>
+                            <div class="flex flex-col border-l border-slate-200 dark:border-slate-700 pl-2 min-w-0">
+                                <span class="text-[9px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider whitespace-nowrap">Rate</span>
+                                <span class="font-extrabold text-slate-700 dark:text-slate-200 text-xs mt-0.5 whitespace-nowrap">${formatCurrency(record.price)}</span>
                             </div>
-                            <div class="flex flex-col text-right border-l border-slate-200 dark:border-slate-700 pl-2 overflow-hidden">
-                                <span class="text-[9px] uppercase font-bold text-emerald-700 dark:text-emerald-400 tracking-wider truncate">Total</span>
-                                <span class="font-extrabold text-emerald-700 dark:text-emerald-400 text-xs mt-0.5 truncate">${formatCurrency(rowTotal)}</span>
+                            <div class="flex flex-col text-right border-l border-slate-200 dark:border-slate-700 pl-2 min-w-0">
+                                <span class="text-[9px] uppercase font-bold text-emerald-700 dark:text-emerald-400 tracking-wider whitespace-nowrap">Total</span>
+                                <span class="font-extrabold text-emerald-700 dark:text-emerald-400 text-xs mt-0.5 whitespace-nowrap">${formatCurrency(rowTotal)}</span>
                             </div>
                         </div>
 
