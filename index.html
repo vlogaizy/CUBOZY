@@ -27,6 +27,22 @@
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
+        /* Disable text selection and highlight across the app */
+        *, *::before, *::after {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Allow typing and selection only inside inputs */
+        input, textarea {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #cbd5e1;
@@ -148,15 +164,39 @@
         .animate-mode-switch {
             animation: modeSwitchFadeSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+
+        /* Prevent text selection and image dragging */
+        *, *::before, *::after {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            pointer-events: none;
+        }
+
+        input, textarea, [contenteditable="true"] {
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+            user-select: text !important;
+        }
     </style>
 </head>
-<body class="min-h-screen flex justify-center selection:bg-emerald-900 selection:text-white">
+<body oncontextmenu="return false;" class="min-h-screen flex justify-center selection:bg-transparent">
 
     <div id="loginScreen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-all duration-500">
         <div class="absolute top-0 w-full h-1/2 bg-gradient-to-br from-emerald-950 via-emerald-900 to-green-950 rounded-b-[3rem] shadow-xl"></div>
         
         <div id="loginCard" class="z-10 bg-white dark:bg-slate-900 p-7 rounded-[2.2rem] shadow-2xl shadow-green-900/20 w-11/12 max-w-[340px] text-center border border-slate-100 dark:border-slate-800 animate-modal-in transform scale-[0.95]">
-            <img src="https://raw.githubusercontent.com/vlogaizy/KUBO/main/KUBO_LOGO.png" alt="KUBO Logo" class="h-16 mx-auto mb-2.5 object-cover rounded-xl" />
+            <img src="https://raw.githubusercontent.com/vlogaizy/KUBO/main/KUBO_LOGO.png" alt="KUBO Logo" draggable="false" class="h-16 mx-auto mb-2.5 object-cover rounded-xl select-none pointer-events-none" />
             
             <!-- Auth Form Container with Transition Animation -->
             <div id="authFormContainer">
@@ -261,7 +301,7 @@
             
             <div class="relative z-10 flex justify-between items-center">
                 <div>
-                    <img src="https://raw.githubusercontent.com/vlogaizy/KUBO/main/KUBO_LOGO.png" alt="KUBO Logo" class="h-28 object-cover rounded-xl mb-1.5 shadow-sm" />
+                    <img src="https://raw.githubusercontent.com/vlogaizy/KUBO/main/KUBO_LOGO.png" alt="KUBO Logo" draggable="false" class="h-28 object-cover rounded-xl mb-1.5 shadow-sm select-none pointer-events-none" />
                     <p class="text-emerald-200 dark:text-slate-300 text-xs font-semibold opacity-90">Tractor works and earnings.</p>
                 </div>
                 <div class="flex items-center gap-2">
@@ -1377,6 +1417,24 @@
                     saveBtn.innerHTML = `<span>Save</span>`;
                 }
             }
+        });
+
+        // Global protection against right-click, copy, drag, and cut
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+        document.addEventListener('dragstart', (e) => e.preventDefault());
+        document.addEventListener('copy', (e) => {
+            const active = document.activeElement;
+            if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) {
+                return;
+            }
+            e.preventDefault();
+        });
+        document.addEventListener('cut', (e) => {
+            const active = document.activeElement;
+            if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) {
+                return;
+            }
+            e.preventDefault();
         });
     </script>
 </body>
