@@ -154,9 +154,56 @@
         .animate-mode-switch {
             animation: modeSwitchFadeSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+
+        /* Ambient Background Glow Animations */
+        @keyframes bgFloat1 {
+            0%, 100% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(45px, -40px) scale(1.12); }
+            66% { transform: translate(-30px, 30px) scale(0.94); }
+        }
+
+        @keyframes bgFloat2 {
+            0%, 100% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(-50px, 35px) scale(1.08); }
+            66% { transform: translate(35px, -35px) scale(0.92); }
+        }
+
+        @keyframes bgFloat3 {
+            0%, 100% { transform: translate(0px, 0px) scale(1); }
+            50% { transform: translate(40px, 45px) scale(1.14); }
+        }
+
+        @keyframes gentleSway {
+            0%, 100% { transform: rotate(-3deg) scale(1); }
+            50% { transform: rotate(1deg) scale(1.03); }
+        }
+
+        .anim-orb-1 {
+            animation: bgFloat1 18s ease-in-out infinite;
+        }
+
+        .anim-orb-2 {
+            animation: bgFloat2 22s ease-in-out infinite;
+        }
+
+        .anim-orb-3 {
+            animation: bgFloat3 26s ease-in-out infinite;
+        }
+
+        .anim-sway {
+            animation: gentleSway 7s ease-in-out infinite;
+            transform-origin: bottom right;
+        }
     </style>
 </head>
-<body class="min-h-screen flex justify-center items-start sm:items-center py-2 sm:py-6 px-1.5 sm:px-0 selection:bg-emerald-200 dark:selection:bg-emerald-700/50 text-slate-800 dark:text-slate-200">
+<body class="min-h-screen flex justify-center items-start sm:items-center py-2 sm:py-6 px-1.5 sm:px-0 selection:bg-emerald-200 dark:selection:bg-emerald-700/50 text-slate-800 dark:text-slate-200 relative overflow-x-hidden">
+
+    <!-- Ambient Animated Background Glow Orbs -->
+    <div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div class="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-emerald-400/25 dark:bg-emerald-600/15 blur-[95px] anim-orb-1"></div>
+        <div class="absolute top-1/3 -right-28 w-96 h-96 rounded-full bg-teal-400/20 dark:bg-emerald-500/10 blur-[105px] anim-orb-2"></div>
+        <div class="absolute -bottom-24 left-1/4 w-[28rem] h-[28rem] rounded-full bg-emerald-300/25 dark:bg-teal-900/20 blur-[110px] anim-orb-3"></div>
+    </div>
 
     <!-- 4-Second Theme-matched Circular Spinner Loading Screen -->
     <div id="startupLoader" class="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-gradient-to-br from-emerald-950 via-emerald-900 to-green-950 transition-opacity duration-700">
@@ -230,8 +277,8 @@
         <div class="pointer-events-none absolute top-0 inset-x-0 h-10 bg-gradient-to-b from-black/25 via-black/5 to-transparent z-30 rounded-t-[3.8rem]"></div>
         
         <header class="mx-5 mt-5 bg-gradient-to-br from-emerald-950 via-emerald-900 to-green-950 text-white p-5 rounded-[2.5rem] shadow-xl shadow-emerald-950/20 z-10 relative overflow-hidden border border-emerald-800/40">
-            <!-- Stylized Paddy Grass & Rice Sheaves SVG Graphic -->
-            <svg class="absolute -bottom-6 -right-6 w-48 h-48 text-emerald-200 dark:text-emerald-400 opacity-20 pointer-events-none transform -rotate-3 transition-opacity" viewBox="0 0 200 200" fill="currentColor">
+            <!-- Stylized Paddy Grass & Rice Sheaves SVG Graphic with gentle breeze animation -->
+            <svg class="absolute -bottom-6 -right-6 w-48 h-48 text-emerald-200 dark:text-emerald-400 opacity-20 pointer-events-none transform -rotate-3 transition-opacity anim-sway" viewBox="0 0 200 200" fill="currentColor">
                 <!-- Paddy Stalk 1 & Grains (Arching left) -->
                 <path d="M190 200 C 170 140, 130 90, 80 70 C 65 65, 50 68, 40 76 C 45 78, 60 76, 75 80 C 120 95, 160 140, 180 200 Z" />
                 <!-- Paddy grains along stalk 1 -->
