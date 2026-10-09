@@ -213,7 +213,8 @@
         </div>
     </div>
 
-    <div id="loginScreen" class="fixed inset-0 z-[100] hidden opacity-0 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-all duration-500">
+    <!-- Login screen starts active and visible so the home page never flashes on startup -->
+    <div id="loginScreen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-all duration-500 opacity-100">
         <div class="absolute top-0 w-full h-1/2 bg-gradient-to-br from-emerald-950 via-emerald-900 to-green-950 rounded-b-[3rem] shadow-xl"></div>
         
         <div id="loginCard" class="z-10 bg-white dark:bg-slate-900 p-7 rounded-[2.2rem] shadow-2xl shadow-green-900/20 w-11/12 max-w-[340px] text-center border border-slate-100 dark:border-slate-800 animate-modal-in transform scale-[0.95]">
@@ -694,6 +695,8 @@
         let isDarkMode = false;
         let currentAuthMode = 'signin';
         let unsubscribeRecords = null;
+        let isFirstAuthCheck = true;
+        let isAppLoading = true;
 
         const form = document.getElementById('recordForm');
         const recordsList = document.getElementById('recordsList');
@@ -733,8 +736,12 @@
         let lastTotalWorks = 0;
         let targetStats = { grandTotal: 0, totalPaid: 0, totalDue: 0, totalWorks: 0 };
 
-        function animateCount(elem, fromVal, toVal, duration = 1100, isCurrency = true, dec = true) {
+        function animateCount(elem, fromVal, toVal, duration = 800, isCurrency = true, dec = true) {
             if (!elem) return;
+            if (fromVal === toVal) {
+                elem.innerText = isCurrency ? formatCurrency(toVal, dec) : `${toVal} Works`;
+                return;
+            }
             const startTime = performance.now();
             function step(currentTime) {
                 const elapsed = currentTime - startTime;
@@ -764,6 +771,7 @@
         };
 
         window.showBlurLoader = function(duration = 2000, onComplete = null) {
+            isAppLoading = true;
             let loader = document.getElementById('startupLoader');
             if (!loader) {
                 loader = document.createElement('div');
@@ -789,33 +797,45 @@
                 }
                 setTimeout(() => {
                     loader.classList.add('hidden');
+                    isAppLoading = false;
                     window.triggerStatsCounterAnimation();
+                    renderRecords(false);
                 }, 700);
             }, duration);
         };
 
         let initialStartupDone = false;
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const loader = document.getElementById('startupLoader');
-                if (loader) {
-                    loader.style.opacity = '0';
-                    loader.style.pointerEvents = 'none';
-                    setTimeout(() => {
-                        loader.classList.add('hidden');
+        function finishStartupLoader() {
+            const loader = document.getElementById('startupLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                loader.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    loader.classList.add('hidden');
+                    isAppLoading = false;
+                    initialStartupDone = true;
+                    if (auth.currentUser) {
                         window.triggerStatsCounterAnimation();
-                    }, 700);
-                }
-                initialStartupDone = true;
-                if (!auth.currentUser) {
-                    const loginScreen = document.getElementById('loginScreen');
-                    if (loginScreen) {
-                        loginScreen.classList.remove('hidden');
-                        requestAnimationFrame(() => { loginScreen.style.opacity = '1'; });
+                        renderRecords(false);
                     }
+                }, 700);
+            } else {
+                isAppLoading = false;
+                initialStartupDone = true;
+                if (auth.currentUser) {
+                    window.triggerStatsCounterAnimation();
+                    renderRecords(false);
                 }
-            }, 3300);
-        });
+            }
+        }
+
+        if (document.readyState === 'complete') {
+            setTimeout(finishStartupLoader, 2000);
+        } else {
+            window.addEventListener('load', () => {
+                setTimeout(finishStartupLoader, 2000);
+            });
+        }
 
         const savedLocalTheme = localStorage.getItem('kubo_theme_dark');
         if (savedLocalTheme === 'true') applyTheme(true);
@@ -1005,6 +1025,16 @@
                 userId = user.uid;
                 initCloudSync();
 
+                if (isFirstAuthCheck) {
+                    isFirstAuthCheck = false;
+                    // Existing session found: seamlessly switch to dashboard behind the startup loader
+                    if (loginScreen) {
+                        loginScreen.classList.add('hidden');
+                        loginScreen.style.opacity = '0';
+                    }
+                    return;
+                }
+
                 const isLoginVisible = loginScreen && !loginScreen.classList.contains('hidden') && loginScreen.style.opacity !== '0';
 
                 if (isLoginVisible && initialStartupDone) {
@@ -1034,6 +1064,22 @@
                 records = [];
                 renderRecords();
                 resetLoginForm();
+
+                if (isFirstAuthCheck) {
+                    isFirstAuthCheck = false;
+                    // Logged out / new user on startup: login screen is already covering the dashboard
+                    if (loginScreen) {
+                        loginScreen.classList.remove('hidden');
+                        loginScreen.style.opacity = '1';
+                        if (loginCard) {
+                            loginCard.classList.remove('animate-modal-out');
+                            loginCard.classList.add('animate-modal-in');
+                        }
+                    }
+                    return;
+                }
+
+                // Subsequent logout flow
                 if (initialStartupDone && loginScreen) {
                     loginScreen.classList.remove('hidden');
                     requestAnimationFrame(() => { loginScreen.style.opacity = '1'; });
@@ -1051,7 +1097,9 @@
                 records = [];
                 snapshot.forEach((docSnap) => records.push({ id: docSnap.id, ...docSnap.data() }));
                 records.sort((a, b) => new Date(b.date) - new Date(a.date));
-                renderRecords();
+                renderRecords(false);
+            }, (error) => {
+                console.error("Firestore sync error:", error);
             });
         }
 
@@ -1177,16 +1225,14 @@
                 totalWorks: records.length
             };
 
-            const loader = document.getElementById('startupLoader');
-            const isLoaderActive = loader && !loader.classList.contains('hidden') && loader.style.opacity !== '0';
-
             if (forceReset) {
                 window.triggerStatsCounterAnimation();
-            } else if (!isLoaderActive) {
-                animateCount(grandTotalDisplay, lastGrandTotal, grandTotal, 800, true, true);
-                animateCount(totalPaidDisplay, lastTotalPaid, totalPaid, 800, true, true);
-                animateCount(totalDueDisplay, lastTotalDue, totalDue, 800, true, true);
-                animateCount(totalRecordsDisplay, lastTotalWorks, records.length, 700, false, false);
+            } else if (!isAppLoading) {
+                // Animate smoothly from the currently displayed value to the newly updated value
+                animateCount(grandTotalDisplay, lastGrandTotal, grandTotal, 700, true, true);
+                animateCount(totalPaidDisplay, lastTotalPaid, totalPaid, 700, true, true);
+                animateCount(totalDueDisplay, lastTotalDue, totalDue, 700, true, true);
+                animateCount(totalRecordsDisplay, lastTotalWorks, records.length, 600, false, false);
                 lastGrandTotal = grandTotal;
                 lastTotalPaid = totalPaid;
                 lastTotalDue = totalDue;
