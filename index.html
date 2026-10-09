@@ -205,12 +205,15 @@
         <div class="absolute -bottom-24 left-1/4 w-[28rem] h-[28rem] rounded-full bg-emerald-300/25 dark:bg-teal-900/20 blur-[110px] anim-orb-3"></div>
     </div>
 
-    <!-- 4-Second Theme-matched Circular Spinner Loading Screen -->
-    <div id="startupLoader" class="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-gradient-to-br from-emerald-950 via-emerald-900 to-green-950 transition-opacity duration-700">
-        <div class="w-12 h-12 border-4 border-emerald-400/30 border-t-emerald-400 rounded-full animate-spin"></div>
+    <!-- Circular Spinner Loading Screen with Blurred Home Page Background -->
+    <div id="startupLoader" class="fixed inset-0 z-[300] flex flex-col items-center justify-center bg-slate-900/10 dark:bg-black/30 backdrop-blur-md transition-opacity duration-700 pointer-events-auto">
+        <div class="relative flex items-center justify-center">
+            <div class="w-16 h-16 rounded-full bg-emerald-500/20 blur-xl absolute pointer-events-none"></div>
+            <div class="w-12 h-12 border-4 border-emerald-500/25 dark:border-emerald-400/25 border-t-emerald-600 dark:border-t-emerald-400 rounded-full animate-spin"></div>
+        </div>
     </div>
 
-    <div id="loginScreen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-all duration-500">
+    <div id="loginScreen" class="fixed inset-0 z-[100] hidden opacity-0 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-all duration-500">
         <div class="absolute top-0 w-full h-1/2 bg-gradient-to-br from-emerald-950 via-emerald-900 to-green-950 rounded-b-[3rem] shadow-xl"></div>
         
         <div id="loginCard" class="z-10 bg-white dark:bg-slate-900 p-7 rounded-[2.2rem] shadow-2xl shadow-green-900/20 w-11/12 max-w-[340px] text-center border border-slate-100 dark:border-slate-800 animate-modal-in transform scale-[0.95]">
@@ -724,12 +727,47 @@
 
         enableIndexedDbPersistence(db).catch(() => {});
 
+        window.showBlurLoader = function(duration = 2000) {
+            let loader = document.getElementById('startupLoader');
+            if (!loader) {
+                loader = document.createElement('div');
+                loader.id = 'startupLoader';
+                loader.className = 'fixed inset-0 z-[300] flex flex-col items-center justify-center bg-slate-900/10 dark:bg-black/30 backdrop-blur-md transition-opacity duration-700 pointer-events-auto';
+                loader.innerHTML = `
+                    <div class="relative flex items-center justify-center">
+                        <div class="w-16 h-16 rounded-full bg-emerald-500/20 blur-xl absolute pointer-events-none"></div>
+                        <div class="w-12 h-12 border-4 border-emerald-500/25 dark:border-emerald-400/25 border-t-emerald-600 dark:border-t-emerald-400 rounded-full animate-spin"></div>
+                    </div>
+                `;
+                document.body.appendChild(loader);
+            }
+            loader.classList.remove('hidden');
+            loader.style.pointerEvents = 'auto';
+            requestAnimationFrame(() => { loader.style.opacity = '1'; });
+
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                loader.style.pointerEvents = 'none';
+                setTimeout(() => loader.classList.add('hidden'), 700);
+            }, duration);
+        };
+
+        let initialStartupDone = false;
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const loader = document.getElementById('startupLoader');
                 if (loader) {
                     loader.style.opacity = '0';
-                    setTimeout(() => loader.remove(), 700);
+                    loader.style.pointerEvents = 'none';
+                    setTimeout(() => loader.classList.add('hidden'), 700);
+                }
+                initialStartupDone = true;
+                if (!auth.currentUser) {
+                    const loginScreen = document.getElementById('loginScreen');
+                    if (loginScreen) {
+                        loginScreen.classList.remove('hidden');
+                        requestAnimationFrame(() => { loginScreen.style.opacity = '1'; });
+                    }
                 }
             }, 3300);
         });
@@ -904,20 +942,39 @@
         onAuthStateChanged(auth, (user) => {
             const loginScreen = document.getElementById('loginScreen');
             const loginCard = document.getElementById('loginCard');
+            const submitBtn = document.getElementById('authSubmitBtn');
+            const submitText = document.getElementById('authSubmitBtnText');
+
             if (user) {
                 userId = user.uid;
-                loginCard.classList.remove('animate-modal-in');
-                loginCard.classList.add('animate-modal-out');
-                setTimeout(() => { loginScreen.style.opacity = '0'; setTimeout(() => loginScreen.classList.add('hidden'), 300); }, 200);
+                if (loginCard) {
+                    loginCard.classList.remove('animate-modal-in');
+                    loginCard.classList.add('animate-modal-out');
+                }
+                if (loginScreen) {
+                    loginScreen.style.opacity = '0';
+                    setTimeout(() => loginScreen.classList.add('hidden'), 300);
+                }
+                if (initialStartupDone) {
+                    window.showBlurLoader(2000);
+                }
                 initCloudSync();
             } else {
                 userId = null;
                 records = [];
                 renderRecords();
-                loginScreen.classList.remove('hidden');
-                loginScreen.style.opacity = '1';
-                loginCard.classList.remove('animate-modal-out');
-                loginCard.classList.add('animate-modal-in');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `<span id="authSubmitBtnText">${currentAuthMode === 'signup' ? 'Sign Up' : 'Sign In'}</span>`;
+                }
+                if (initialStartupDone && loginScreen) {
+                    loginScreen.classList.remove('hidden');
+                    requestAnimationFrame(() => { loginScreen.style.opacity = '1'; });
+                    if (loginCard) {
+                        loginCard.classList.remove('animate-modal-out');
+                        loginCard.classList.add('animate-modal-in');
+                    }
+                }
             }
         });
 
@@ -1072,47 +1129,47 @@
                 const origIdx = records.findIndex(r => r.id === record.id);
 
                 const card = document.createElement('div');
-                card.className = `bg-white dark:bg-slate-800/95 rounded-[2rem] p-3.5 pl-4.5 border ${isPaid ? 'border-emerald-200 dark:border-emerald-900/50' : 'border-amber-200 dark:border-amber-900/50'} shadow-md relative overflow-hidden transition-all mb-4`;
+                card.className = `bg-white dark:bg-slate-800/95 rounded-[1.6rem] p-2 pl-3.5 border ${isPaid ? 'border-emerald-200 dark:border-emerald-900/50' : 'border-amber-200 dark:border-amber-900/50'} shadow-md relative overflow-hidden transition-all mb-2.5`;
                 card.innerHTML = `
-                    <div class="absolute left-0 top-0 bottom-0 w-2.5 rounded-l-3xl ${isPaid ? 'bg-emerald-500' : 'bg-amber-500'}"></div>
-                    <div class="bg-slate-50 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-700/70 rounded-2xl p-3 mb-2.5 flex justify-between items-center shadow-sm">
-                        <div class="flex items-center gap-3 min-w-0 flex-1">
-                            <div class="w-10 h-10 rounded-xl ${isPaid ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'} flex items-center justify-center font-extrabold text-sm shrink-0">
+                    <div class="absolute left-0 top-0 bottom-0 w-2 rounded-l-2xl ${isPaid ? 'bg-emerald-500' : 'bg-amber-500'}"></div>
+                    <div class="bg-slate-50 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-700/70 rounded-xl px-2.5 py-1.5 mb-1.5 flex justify-between items-center shadow-sm">
+                        <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                            <div class="w-8 h-8 rounded-lg ${isPaid ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'} flex items-center justify-center font-extrabold text-sm shrink-0">
                                 ${(record.name[0] || 'W').toUpperCase()}
                             </div>
                             <div class="min-w-0 flex-1">
-                                <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-1.5">
                                     <h4 class="font-extrabold text-slate-800 dark:text-white text-sm truncate">${record.name}</h4>
-                                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${isPaid ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${isPaid ? '✓ Completed' : '● Pending'}</span>
+                                    <span class="px-1.5 py-0.2 rounded-full text-[9px] font-black uppercase tracking-wider ${isPaid ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${isPaid ? '✓ Completed' : '● Pending'}</span>
                                 </div>
-                                <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate mt-0.5">${record.location} &bull; ${record.date}</p>
+                                <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate">${record.location} &bull; ${record.date}</p>
                             </div>
                         </div>
-                        <button onclick="requestDeleteRecord(${origIdx})" class="p-2 text-slate-400 hover:text-red-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                        <button onclick="requestDeleteRecord(${origIdx})" class="p-1 text-slate-400 hover:text-red-500 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                     </div>
-                    <div class="grid grid-cols-3 gap-2 mb-2.5">
-                        <div class="bg-slate-50 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-700/70 rounded-2xl p-2.5 flex flex-col justify-center">
-                            <span class="text-[9px] uppercase font-extrabold text-slate-400">Acres</span>
-                            <span class="font-extrabold text-slate-800 dark:text-slate-100 text-xs mt-1">${record.acres}</span>
+                    <div class="flex gap-1.5 mb-1.5">
+                        <div class="w-20 shrink-0 bg-slate-50 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-700/70 rounded-xl px-2 py-1 flex flex-col justify-center text-center">
+                            <span class="text-[9px] uppercase font-extrabold text-slate-400 tracking-wider">Acres</span>
+                            <span class="font-extrabold text-slate-800 dark:text-slate-100 text-xs truncate leading-tight">${record.acres}</span>
                         </div>
-                        <div class="bg-slate-50 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-700/70 rounded-2xl p-2.5 flex flex-col justify-center">
+                        <div class="flex-1 bg-slate-50 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-700/70 rounded-xl px-2 py-1 flex flex-col justify-center">
                             <span class="text-[9px] uppercase font-extrabold text-slate-400">Rate</span>
-                            <span class="font-extrabold text-slate-800 dark:text-slate-100 text-xs mt-1">${formatCurrency(record.price)}</span>
+                            <span class="font-extrabold text-slate-800 dark:text-slate-100 text-xs truncate leading-tight">${formatCurrency(record.price)}</span>
                         </div>
-                        <div class="bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200/70 dark:border-emerald-800/50 rounded-2xl p-2.5 flex flex-col justify-center text-right">
+                        <div class="flex-1 bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200/70 dark:border-emerald-800/50 rounded-xl px-2 py-1 flex flex-col justify-center text-right">
                             <span class="text-[9px] uppercase font-extrabold text-emerald-700">Total</span>
-                            <span class="font-extrabold text-emerald-700 dark:text-emerald-400 text-xs mt-1">${formatCurrency(tot)}</span>
+                            <span class="font-extrabold text-emerald-700 dark:text-emerald-400 text-xs truncate leading-tight">${formatCurrency(tot)}</span>
                         </div>
                     </div>
-                    <div class="bg-slate-50 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-700/70 rounded-2xl p-3 flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <div class="flex flex-col"><span class="text-[9px] uppercase font-extrabold text-slate-400">Paid</span><span class="font-extrabold text-slate-700 dark:text-slate-200 text-xs mt-0.5">${formatCurrency(paid)}</span></div>
-                            <div class="h-6 w-[1px] bg-slate-200 dark:bg-slate-700"></div>
-                            <div class="flex flex-col"><span class="text-[9px] uppercase font-extrabold ${isPaid ? 'text-emerald-700' : 'text-amber-500'}">Due</span><span class="font-extrabold ${isPaid ? 'text-emerald-700' : 'text-amber-600'} text-xs mt-0.5">${formatCurrency(due > 0 ? due : 0)}</span></div>
+                    <div class="bg-slate-50 dark:bg-slate-900/60 border border-slate-200/70 dark:border-slate-700/70 rounded-xl px-2.5 py-1.5 flex justify-between items-center">
+                        <div class="flex items-center gap-2.5">
+                            <div class="flex flex-col"><span class="text-[9px] uppercase font-extrabold text-slate-400 leading-none">Paid</span><span class="font-extrabold text-slate-700 dark:text-slate-200 text-xs mt-0.5 leading-tight">${formatCurrency(paid)}</span></div>
+                            <div class="h-5 w-[1px] bg-slate-200 dark:bg-slate-700"></div>
+                            <div class="flex flex-col"><span class="text-[9px] uppercase font-extrabold ${isPaid ? 'text-emerald-700' : 'text-amber-500'} leading-none">Due</span><span class="font-extrabold ${isPaid ? 'text-emerald-700' : 'text-amber-600'} text-xs mt-0.5 leading-tight">${formatCurrency(due > 0 ? due : 0)}</span></div>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            ${paid > 0 ? `<button onclick="openHistoryModal(${origIdx})" class="bg-purple-500/10 text-purple-700 dark:text-purple-300 px-3 py-1.5 rounded-xl text-[10px] font-extrabold">History</button>` : ''}
-                            ${!isPaid ? `<button onclick="openPaymentModal(${origIdx})" class="bg-blue-600 text-white px-3.5 py-1.5 rounded-xl text-[11px] font-extrabold">+ Pay</button>` : `<span class="bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 px-3 py-1.5 rounded-xl text-[10px] font-extrabold">Completed</span>`}
+                            ${paid > 0 ? `<button onclick="openHistoryModal(${origIdx})" class="bg-purple-500/10 text-purple-700 dark:text-purple-300 px-2.5 py-1 rounded-lg text-[10px] font-extrabold">History</button>` : ''}
+                            ${!isPaid ? `<button onclick="openPaymentModal(${origIdx})" class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[11px] font-extrabold shadow-sm">+ Pay</button>` : `<span class="bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 px-2.5 py-1 rounded-lg text-[10px] font-extrabold">Completed</span>`}
                         </div>
                     </div>
                 `;
