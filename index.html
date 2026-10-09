@@ -24,6 +24,21 @@
         } catch (e) {
             console.debug("Tailwind config init:", e);
         }
+
+        // Define early stubs for inline event handlers to prevent ReferenceErrors before ES module loads
+        window.hideAuthError = function() {
+            const err = document.getElementById('authError');
+            if (err) err.classList.add('opacity-0');
+        };
+        window.hideResetPasswordError = function() {
+            const msg = document.getElementById('resetPasswordMsg');
+            if (msg) {
+                msg.classList.add('opacity-0');
+                msg.innerText = '';
+            }
+        };
+        window.switchAuthMode = window.switchAuthMode || function() {};
+        window.openForgotPasswordModal = window.openForgotPasswordModal || function() {};
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
@@ -190,7 +205,7 @@
         }
     </style>
 </head>
-<body oncontextmenu="return false;" class="min-h-screen flex justify-center selection:bg-transparent">
+<body oncontextmenu="return false;" class="min-h-screen flex justify-center items-start sm:items-center py-2 sm:py-6 px-1.5 sm:px-0 selection:bg-transparent">
 
     <div id="loginScreen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-all duration-500">
         <div class="absolute top-0 w-full h-1/2 bg-gradient-to-br from-emerald-950 via-emerald-900 to-green-950 rounded-b-[3rem] shadow-xl"></div>
@@ -264,7 +279,9 @@
         </div>
     </div>
 
-    <div class="w-full max-w-md bg-slate-50 dark:bg-slate-900 min-h-screen shadow-2xl relative overflow-x-hidden flex flex-col no-scrollbar pb-24 scale-[0.98] sm:scale-100 transition-colors duration-300">
+    <div class="w-full max-w-md bg-slate-50 dark:bg-slate-900 min-h-[96vh] sm:min-h-[92vh] shadow-2xl relative overflow-hidden flex flex-col no-scrollbar pb-24 rounded-[2.2rem] border border-white/60 dark:border-slate-800/80 transition-all duration-300">
+        <!-- Top subtle fade vignette overlay -->
+        <div class="pointer-events-none absolute top-0 inset-x-0 h-10 bg-gradient-to-b from-black/25 via-black/5 to-transparent z-30 rounded-t-[2.2rem]"></div>
         
         <header class="bg-gradient-to-br from-emerald-950 via-emerald-900 to-green-950 text-white p-6 pt-20 pb-20 rounded-b-[2.5rem] shadow-lg z-10 relative overflow-hidden">
             <!-- Stylized Paddy Grass & Rice Sheaves SVG Graphic -->
@@ -404,6 +421,9 @@
                 </div>
             </div>
         </main>
+
+        <!-- Bottom smooth fade overlay -->
+        <div class="pointer-events-none absolute bottom-0 inset-x-0 h-20 bg-gradient-to-t from-slate-50 via-slate-50/85 to-transparent dark:from-slate-900 dark:via-slate-900/85 z-20 rounded-b-[2.2rem]"></div>
     </div>
 
     <div id="addRecordModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 transition-all duration-300">
