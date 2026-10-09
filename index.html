@@ -28,7 +28,7 @@
         @keyframes modalPopIn {
             0% {
                 opacity: 0;
-                transform: scale(0.8) translateY(20px);
+                transform: scale(0.85) translateY(15px);
             }
             100% {
                 opacity: 1;
@@ -44,7 +44,7 @@
             }
             100% {
                 opacity: 0;
-                transform: scale(0.8) translateY(20px);
+                transform: scale(0.85) translateY(15px);
             }
         }
 
@@ -87,7 +87,7 @@
         </div>
     </div>
 
-    <div class="w-full max-w-md bg-slate-50 min-h-screen shadow-2xl relative overflow-x-hidden flex flex-col no-scrollbar pb-24">
+    <div class="w-full max-w-md bg-slate-50 min-h-screen shadow-2xl relative overflow-x-hidden flex flex-col no-scrollbar pb-24 scale-[0.98] sm:scale-100 transition-transform">
         
         <header class="bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-600 text-white p-6 pt-12 pb-16 rounded-b-[2.5rem] shadow-lg z-10 relative overflow-hidden">
             <svg class="absolute -bottom-10 -right-10 w-48 h-48 text-white opacity-10 transform rotate-12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM11 19.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
@@ -157,11 +157,18 @@
             </button>
 
             <div class="mt-8 pb-4">
-                <div class="flex justify-between items-end mb-4 px-1">
+                <div class="flex justify-between items-end mb-3 px-1">
                     <div>
                         <h2 class="text-xl font-extrabold text-slate-800">Recent Works</h2>
                         <p class="text-xs text-slate-500 font-medium mt-0.5">Your saved history</p>
                     </div>
+                </div>
+
+                <!-- Filter Tabs -->
+                <div class="flex bg-slate-200/80 p-1 rounded-2xl mb-4 gap-1">
+                    <button onclick="setFilter('all')" id="filterAllBtn" class="flex-1 py-2 text-xs font-bold rounded-xl transition-all bg-white text-slate-800 shadow-sm">All</button>
+                    <button onclick="setFilter('pending')" id="filterPendingBtn" class="flex-1 py-2 text-xs font-bold rounded-xl transition-all text-slate-600">Pending</button>
+                    <button onclick="setFilter('completed')" id="filterCompletedBtn" class="flex-1 py-2 text-xs font-bold rounded-xl transition-all text-slate-600">Completed</button>
                 </div>
                 
                 <div id="recordsList" class="space-y-4"></div>
@@ -170,15 +177,15 @@
                     <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 text-slate-300">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     </div>
-                    <h4 class="text-slate-700 font-bold text-lg mb-1">No Works Yet</h4>
-                    <p class="text-sm font-medium text-slate-400 max-w-[200px]">Fill the form above to add your first tractor work record.</p>
+                    <h4 class="text-slate-700 font-bold text-lg mb-1">No Works Found</h4>
+                    <p class="text-sm font-medium text-slate-400 max-w-[200px]">No records match the selected filter category.</p>
                 </div>
             </div>
         </main>
     </div>
 
     <div id="addRecordModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity">
-        <div id="addRecordContent" class="glass-modal rounded-[1.8rem] shadow-2xl w-[95%] max-w-[310px] p-4 relative transform transition-all border border-white/50 max-h-[82vh] overflow-y-auto no-scrollbar mx-auto">
+        <div id="addRecordContent" class="glass-modal rounded-[1.8rem] shadow-2xl w-[90%] max-w-[290px] p-4 relative transform transition-all border border-white/50 max-h-[82vh] overflow-y-auto no-scrollbar mx-auto">
             
             <button onclick="closeAddRecordModal()" class="absolute top-3.5 right-3.5 w-7 h-7 flex items-center justify-center bg-slate-100 hover:bg-slate-200 active:bg-slate-300 rounded-full text-slate-500 transition-colors z-10 shadow-sm">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -217,7 +224,7 @@
                         <label class="block text-[9px] font-bold text-slate-500 mb-0.5 ml-2 uppercase tracking-wider">Date</label>
                         <div class="flex justify-center">
                             <input type="date" id="date" required="required" 
-                                class="w-[140px] px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-[0.9rem] focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-[11px] font-bold text-slate-700 shadow-sm box-border text-center" />
+                                class="w-[115px] px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-[0.9rem] focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-[11px] font-bold text-slate-700 shadow-sm box-border text-center" />
                         </div>
                     </div>
 
@@ -259,6 +266,7 @@
         </div>
     </div>
 
+    <!-- Alert Modal -->
     <div id="alertModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity">
         <div id="alertContent" class="glass-modal rounded-[1.8rem] shadow-2xl max-w-xs w-full p-5 text-center transform transition-all border border-white/50">
             <div class="w-11 h-11 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -270,6 +278,7 @@
         </div>
     </div>
 
+    <!-- Confirm Modal -->
     <div id="confirmModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity">
         <div id="confirmContent" class="glass-modal rounded-[1.8rem] shadow-2xl max-w-xs w-full p-5 text-center transform transition-all border border-white/50">
             <div class="w-11 h-11 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -284,6 +293,7 @@
         </div>
     </div>
 
+    <!-- Password Modal -->
     <div id="passwordModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity">
         <div id="passwordContent" class="glass-modal rounded-[1.8rem] shadow-2xl max-w-xs w-full p-5 text-center transform transition-all border border-white/50">
             <div class="w-11 h-11 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -302,6 +312,7 @@
         </div>
     </div>
 
+    <!-- Payment Modal -->
     <div id="paymentModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity">
         <div id="paymentContent" class="glass-modal rounded-[1.8rem] shadow-2xl max-w-xs w-full p-5 text-center transform transition-all border border-white/50">
             <div class="w-11 h-11 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -323,6 +334,7 @@
         </div>
     </div>
 
+    <!-- History Modal -->
     <div id="historyModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity">
         <div id="historyContent" class="glass-modal rounded-[1.8rem] shadow-2xl max-w-xs w-full p-5 relative transform transition-all border border-white/50 max-h-[75vh] flex flex-col">
             <button onclick="closeHistoryModal()" class="absolute top-4 right-4 w-7 h-7 flex items-center justify-center bg-slate-100 hover:bg-slate-200 active:bg-slate-300 rounded-full text-slate-500 transition-colors z-10 shadow-sm">
@@ -347,6 +359,7 @@
         import { getFirestore, doc, addDoc, updateDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
         let records = [];
+        let currentFilter = 'all'; // 'all', 'pending', 'completed'
         let db, auth, userId;
 
         const form = document.getElementById('recordForm');
@@ -544,29 +557,56 @@
             return 'Rs. ' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         };
         
+        window.setFilter = function(filter) {
+            currentFilter = filter;
+            document.getElementById('filterAllBtn').className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all " + (filter === 'all' ? "bg-white text-slate-800 shadow-sm" : "text-slate-600");
+            document.getElementById('filterPendingBtn').className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all " + (filter === 'pending' ? "bg-white text-slate-800 shadow-sm" : "text-slate-600");
+            document.getElementById('filterCompletedBtn').className = "flex-1 py-2 text-xs font-bold rounded-xl transition-all " + (filter === 'completed' ? "bg-white text-slate-800 shadow-sm" : "text-slate-600");
+            renderRecords();
+        };
+
         function renderRecords(animateFirst = false) {
             recordsList.innerHTML = '';
             let grandTotal = 0;
             let totalPaidOverall = 0;
             let totalDueOverall = 0;
 
-            if (records.length === 0) {
+            records.forEach((record) => {
+                const rowTotal = record.acres * record.price;
+                const paidAmount = record.paidAmount || 0;
+                const rowDue = rowTotal - paidAmount;
+                
+                grandTotal += rowTotal;
+                totalPaidOverall += paidAmount;
+                totalDueOverall += rowDue;
+            });
+
+            const filteredRecords = records.filter(record => {
+                const rowTotal = record.acres * record.price;
+                const paidAmount = record.paidAmount || 0;
+                const rowDue = rowTotal - paidAmount;
+                const isFullyPaid = rowDue <= 0;
+
+                if (currentFilter === 'pending') return !isFullyPaid;
+                if (currentFilter === 'completed') return isFullyPaid;
+                return true;
+            });
+
+            if (filteredRecords.length === 0) {
                 emptyState.classList.remove('hidden');
                 recordsList.classList.add('hidden');
             } else {
                 emptyState.classList.add('hidden');
                 recordsList.classList.remove('hidden');
 
-                records.forEach((record, index) => {
+                filteredRecords.forEach((record, index) => {
                     const rowTotal = record.acres * record.price;
                     const paidAmount = record.paidAmount || 0;
                     const rowDue = rowTotal - paidAmount;
-                    
-                    grandTotal += rowTotal;
-                    totalPaidOverall += paidAmount;
-                    totalDueOverall += rowDue;
-
                     const isFullyPaid = rowDue <= 0;
+
+                    // Find original index in full records array for actions
+                    const originalIndex = records.findIndex(r => r.id === record.id);
 
                     const card = document.createElement('div');
                     card.className = `bg-white rounded-3xl shadow-sm border border-slate-100 p-1 relative overflow-hidden ${animateFirst && index === 0 ? 'animate-card' : ''}`;
@@ -596,7 +636,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button onclick="requestDeleteRecord(${index})" class="p-1.5 text-slate-300 hover:text-red-500 active:bg-red-50 rounded-full transition-colors shrink-0" title="Delete">
+                            <button onclick="requestDeleteRecord(${originalIndex})" class="p-1.5 text-slate-300 hover:text-red-500 active:bg-red-50 rounded-full transition-colors shrink-0" title="Delete">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
                         </div>
@@ -629,13 +669,13 @@
                             </div>
                             <div class="flex gap-2">
                                 ${paidAmount > 0 ? `
-                                <button onclick="openHistoryModal(${index})" class="bg-purple-50 text-purple-600 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wide active:bg-purple-100 transition-colors flex items-center gap-1">
+                                <button onclick="openHistoryModal(${originalIndex})" class="bg-purple-50 text-purple-600 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wide active:bg-purple-100 transition-colors flex items-center gap-1">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                     History
                                 </button>
                                 ` : ''}
                                 ${!isFullyPaid ? `
-                                <button onclick="openPaymentModal(${index})" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wide active:bg-blue-100 transition-colors flex items-center gap-1">
+                                <button onclick="openPaymentModal(${originalIndex})" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wide active:bg-blue-100 transition-colors flex items-center gap-1">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                                     Pay
                                 </button>
