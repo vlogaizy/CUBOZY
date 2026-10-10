@@ -196,52 +196,92 @@
             transform-origin: bottom right;
         }
 
-        /* Tractor Driving Animation */
-        @keyframes driveTractor {
+        /* Tractor Driving & Park Animation */
+        @keyframes driveAndPark {
             0% {
-                transform: translateX(-120px);
+                transform: translateX(-110px);
             }
             100% {
-                transform: translateX(450px);
+                transform: translateX(clamp(175px, 48%, 215px));
             }
         }
 
-        @keyframes wheelSpin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        @keyframes wheelSpinDecel {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(1080deg); }
+        }
+
+        /* Gentle idling engine vibration once stopped */
+        @keyframes tractorEngineIdle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-0.65px); }
         }
 
         @keyframes exhaustPuff {
-            0% { opacity: 0.8; transform: translate(0, 0) scale(0.6); }
-            50% { opacity: 0.4; transform: translate(-10px, -8px) scale(1.1); }
-            100% { opacity: 0; transform: translate(-20px, -15px) scale(1.6); }
+            0% { opacity: 0.95; transform: translate(0, 0) scale(0.6); }
+            50% { opacity: 0.55; transform: translate(-9px, -11px) scale(1.15); }
+            100% { opacity: 0; transform: translate(-20px, -22px) scale(1.75); }
         }
 
         .anim-tractor {
-            animation: driveTractor 13s linear infinite;
+            animation: driveAndPark 3.6s cubic-bezier(0.2, 0.8, 0.35, 1) forwards;
             will-change: transform;
         }
 
+        .anim-tractor-idle {
+            animation: tractorEngineIdle 0.32s ease-in-out infinite;
+            transform-origin: bottom center;
+        }
+
         .anim-wheel {
-            animation: wheelSpin 1.1s linear infinite;
+            animation: wheelSpinDecel 3.6s cubic-bezier(0.2, 0.8, 0.35, 1) forwards;
             transform-box: fill-box;
             transform-origin: center;
         }
 
         .anim-puff-1 {
-            animation: exhaustPuff 1.6s ease-out infinite;
+            animation: exhaustPuff 1.5s ease-out infinite;
             transform-box: fill-box;
         }
 
         .anim-puff-2 {
-            animation: exhaustPuff 1.6s ease-out infinite 0.6s;
+            animation: exhaustPuff 1.5s ease-out infinite 0.5s;
             transform-box: fill-box;
         }
 
+        .anim-puff-3 {
+            animation: exhaustPuff 1.5s ease-out infinite 1.0s;
+            transform-box: fill-box;
+        }
+
+        /* Tractor Letter Reveal */
+        @keyframes letterReveal {
+            0% {
+                opacity: 0;
+                transform: translateY(3px) scale(0.9);
+                filter: blur(1.5px);
+            }
+            50% {
+                color: #a7f3d0;
+                filter: blur(0px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                color: #ffffff;
+                filter: blur(0px);
+            }
+        }
+
+        .tractor-letter {
+            opacity: 0;
+            display: inline-block;
+            white-space: pre;
+            will-change: transform, opacity;
+        }
+
         .text-pop {
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 1px 2px rgba(4, 47, 46, 0.9);
-            position: relative;
-            z-index: 20;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), 0 0 10px rgba(6, 78, 59, 0.8);
         }
     </style>
 </head>
@@ -367,12 +407,13 @@
                 <!-- Subtle furrow track line -->
                 <div class="absolute bottom-1 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-600/30 to-transparent"></div>
                 
-                <!-- Driving Tractor SVG (placed in background layer) -->
-                <div class="anim-tractor absolute bottom-0.5 w-24 h-12 opacity-30 dark:opacity-35 pointer-events-none z-0">
-                    <svg viewBox="0 0 100 55" fill="none" class="w-full h-full drop-shadow-sm">
-                        <!-- Exhaust Smoke Puffs -->
+                <!-- Driving & Parked Tractor SVG with continuous idle smoke -->
+                <div class="anim-tractor absolute bottom-1 w-24 h-12 opacity-50 dark:opacity-65">
+                    <svg viewBox="0 0 100 55" fill="none" class="w-full h-full drop-shadow-sm anim-tractor-idle">
+                        <!-- Continuous Exhaust Smoke Puffs (Keep puffing while idling) -->
                         <circle cx="68" cy="12" r="3" fill="#a7f3d0" class="anim-puff-1" />
-                        <circle cx="66" cy="10" r="2" fill="#d1fae5" class="anim-puff-2" />
+                        <circle cx="66" cy="10" r="2.2" fill="#d1fae5" class="anim-puff-2" />
+                        <circle cx="70" cy="8" r="2.6" fill="#ecfdf5" class="anim-puff-3" />
 
                         <!-- Exhaust Chimney / Pipe -->
                         <path d="M68 25 L68 15 C68 13.5 69 13 71 13" stroke="#a7f3d0" stroke-width="2" stroke-linecap="round" fill="none" />
@@ -396,7 +437,7 @@
                         <!-- Front Headlight Glow -->
                         <path d="M86 32 L89 33 L86 34 Z" fill="#fef08a" />
                         
-                        <!-- Big Rear Wheel with Rotating Spoke Details -->
+                        <!-- Big Rear Wheel with Decelerating Spoke Details -->
                         <g class="anim-wheel">
                             <circle cx="34" cy="40" r="13" fill="#042f2e" stroke="#34d399" stroke-width="2.5" />
                             <circle cx="34" cy="40" r="5.5" fill="#10b981" />
@@ -408,7 +449,7 @@
                             <circle cx="34" cy="40" r="2" fill="#ecfdf5" />
                         </g>
 
-                        <!-- Small Front Wheel with Rotating Spokes -->
+                        <!-- Small Front Wheel with Decelerating Spokes -->
                         <g class="anim-wheel">
                             <circle cx="78" cy="44" r="8" fill="#042f2e" stroke="#34d399" stroke-width="2" />
                             <circle cx="78" cy="44" r="3.5" fill="#10b981" />
@@ -422,10 +463,11 @@
                 </div>
             </div>
             
-            <div class="relative z-20 flex justify-between items-center pointer-events-auto">
+            <div class="relative z-10 flex justify-between items-center">
                 <div class="flex flex-col">
                     <img src="https://raw.githubusercontent.com/vlogaizy/KUBO/main/KUBO_LOGO.png" alt="KUBO Logo" draggable="false" class="h-20 w-auto object-contain rounded-xl mb-1 select-none pointer-events-none" />
-                    <p class="text-white text-xs font-extrabold pl-2 text-pop tracking-wide">Tractor works and earnings.</p>
+                    <!-- Subtitle text revealed sequentially as tractor passes -->
+                    <p id="tractorSubtitle" class="text-white text-xs font-extrabold pl-2 relative z-20 flex tracking-tight text-pop"></p>
                 </div>
                 <div class="flex items-center gap-2">
                     <!-- Settings Button -->
@@ -806,6 +848,24 @@
         let unsubscribeRecords = null;
         let isFirstAuthCheck = true;
         let isAppLoading = true;
+
+        function initTractorText() {
+            const container = document.getElementById('tractorSubtitle');
+            if (!container) return;
+            const text = "Tractor works and earnings.";
+            container.innerHTML = '';
+            
+            [...text].forEach((char, i) => {
+                const span = document.createElement('span');
+                span.textContent = char;
+                span.className = 'tractor-letter';
+                // Synchronized to reveal as the tractor drives over each letter
+                const delay = 0.5 + i * 0.065;
+                span.style.animation = `letterReveal 0.45s cubic-bezier(0.16, 1, 0.3, 1) ${delay.toFixed(3)}s forwards`;
+                container.appendChild(span);
+            });
+        }
+        initTractorText();
 
         const form = document.getElementById('recordForm');
         const recordsList = document.getElementById('recordsList');
