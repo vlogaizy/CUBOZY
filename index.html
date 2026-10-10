@@ -743,7 +743,7 @@
             
             <div class="flex gap-2.5">
                 <button onclick="closePaymentModal()" class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold py-3 rounded-xl active:bg-slate-200 dark:active:bg-slate-700 transition-colors text-sm">Cancel</button>
-                <button id="savePaymentConfirmBtn" onclick="savePayment()" class="flex-1 bg-gradient-to-r from-emerald-800 to-green-900 text-white font-bold py-3 rounded-xl active:from-emerald-900 active:to-green-950 transition-colors shadow-md shadow-emerald-900/20 text-sm">Add Payment</button>
+                <button id="savePaymentConfirmBtn" onclick="savePayment()" class="flex-1 bg-gradient-to-r from-emerald-800 to-green-900 text-white font-bold py-3 rounded-xl active:from-emerald-900 active:to-green-950 transition-colors shadow-md shadow-emerald-900/20 text-sm disabled:opacity-75 disabled:pointer-events-none flex items-center justify-center gap-1.5">Pay</button>
             </div>
         </div>
     </div>
@@ -1311,26 +1311,57 @@
             const r = records[idx];
             document.getElementById('paymentModalContext').innerText = `${r.name} - Due: Rs. ${(r.acres * r.price - (r.paidAmount || 0)).toLocaleString()}`;
             document.getElementById('newPaymentAmount').value = '';
+            const btn = document.getElementById('savePaymentConfirmBtn');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Pay';
+            }
             window.openAnimatedModal('paymentModal', 'paymentContent', 'newPaymentAmount');
         };
-        window.closePaymentModal = function() { window.closeAnimatedModal('paymentModal', 'paymentContent', () => activePaymentRecordIndex = null); };
+        window.closePaymentModal = function() { 
+            const btn = document.getElementById('savePaymentConfirmBtn');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Pay';
+            }
+            window.closeAnimatedModal('paymentModal', 'paymentContent', () => activePaymentRecordIndex = null); 
+        };
 
         window.savePayment = async function() {
             if (activePaymentRecordIndex === null) return;
             const amt = parseFloat(document.getElementById('newPaymentAmount').value);
             if (isNaN(amt) || amt <= 0) { window.customAlert("Enter a valid amount."); return; }
             
-            // Play Ka-Ching & Coin Chime sound + Money Haptic
-            window.playMoneySound();
-            
-            const r = records[activePaymentRecordIndex];
-            const newPaid = (r.paidAmount || 0) + amt;
-            const history = r.paymentHistory || [];
-            history.push({ amount: amt, date: new Date().toISOString().split('T')[0] });
+            const btn = document.getElementById('savePaymentConfirmBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'pointer-events-none');
+            btn.innerHTML = `
+                <svg class="animate-spin h-4 w-4 text-white inline-block mr-1.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Paying...</span>
+            `;
+
             try {
+                // Play Ka-Ching & Coin Chime sound + Money Haptic
+                window.playMoneySound();
+                
+                const r = records[activePaymentRecordIndex];
+                const newPaid = (r.paidAmount || 0) + amt;
+                const history = r.paymentHistory || [];
+                history.push({ amount: amt, date: new Date().toISOString().split('T')[0] });
+                
                 await updateDoc(doc(db, 'cubozy_tractor_works', r.id), { paidAmount: newPaid, paymentHistory: history });
                 window.closePaymentModal();
-            } catch (e) {}
+            } catch (e) {
+                window.customAlert("Failed to save payment.");
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-75', 'pointer-events-none');
+                btn.innerHTML = originalText;
+            }
         };
 
         window.openHistoryModal = function(idx) {
