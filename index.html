@@ -42,6 +42,146 @@
         window.openForgotPasswordModal = window.openForgotPasswordModal || function() {};
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>
+        // Native Web Audio & Mobile Haptic Engine (Zero external dependencies)
+        let webAudioCtx = null;
+
+        function getAudioContext() {
+            if (!webAudioCtx) {
+                const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtxClass) {
+                    webAudioCtx = new AudioCtxClass();
+                }
+            }
+            if (webAudioCtx && webAudioCtx.state === 'suspended') {
+                webAudioCtx.resume();
+            }
+            return webAudioCtx;
+        }
+
+        // Unlock audio on the very first touch/click anywhere on screen
+        const unlockAudioOnGesture = () => {
+            const ctx = getAudioContext();
+            if (ctx && ctx.state === 'suspended') {
+                ctx.resume();
+            }
+        };
+        window.addEventListener('pointerdown', unlockAudioOnGesture, { passive: true });
+        window.addEventListener('touchstart', unlockAudioOnGesture, { passive: true });
+        window.addEventListener('click', unlockAudioOnGesture, { passive: true });
+
+        // Multi-level Haptic feedback
+        window.triggerHaptic = function(type = 'light') {
+            try {
+                if ('vibrate' in navigator) {
+                    if (type === 'money') {
+                        navigator.vibrate([35, 45, 40, 50, 70]);
+                    } else if (type === 'medium') {
+                        navigator.vibrate(28);
+                    } else {
+                        navigator.vibrate(14);
+                    }
+                }
+            } catch (e) {}
+        };
+
+        // UI Crisp Click Pop Sound
+        window.playClickSound = function() {
+            window.triggerHaptic('light');
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+                
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc.type = 'sine';
+                // Snappy pitch slide from 820Hz down to 140Hz in 35ms gives a modern iOS UI tap
+                osc.frequency.setValueAtTime(820, now);
+                osc.frequency.exponentialRampToValueAtTime(140, now + 0.035);
+                
+                gain.gain.setValueAtTime(0.24, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                
+                osc.start(now);
+                osc.stop(now + 0.04);
+            } catch (e) {}
+        };
+
+        // Realistic Cash Register "Ka-Ching" & Shimmering Coins Sound
+        window.playMoneySound = function() {
+            window.triggerHaptic('money');
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+                
+                // 1. Cash register mechanical latch / lever slide
+                const leverOsc = ctx.createOscillator();
+                const leverGain = ctx.createGain();
+                leverOsc.type = 'triangle';
+                leverOsc.frequency.setValueAtTime(420, now);
+                leverOsc.frequency.exponentialRampToValueAtTime(120, now + 0.07);
+                leverGain.gain.setValueAtTime(0.3, now);
+                leverGain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+                leverOsc.connect(leverGain);
+                leverGain.connect(ctx.destination);
+                leverOsc.start(now);
+                leverOsc.stop(now + 0.08);
+
+                // 2. High brilliant bell chord sequence: F#6, A#6, C#7, F#7 (Classic Ka-Ching chime!)
+                const chimeNotes = [1480, 1864, 2217, 2960];
+                chimeNotes.forEach((freq, idx) => {
+                    const noteStart = now + 0.05 + (idx * 0.035);
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, noteStart);
+                    
+                    gain.gain.setValueAtTime(0.24, noteStart);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + 0.65);
+                    
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    
+                    osc.start(noteStart);
+                    osc.stop(noteStart + 0.68);
+                });
+
+                // 3. Shimmering metallic coins drop
+                [3100, 3650, 4400].forEach((freq, idx) => {
+                    const coinStart = now + 0.18 + (idx * 0.07);
+                    const coinOsc = ctx.createOscillator();
+                    const coinGain = ctx.createGain();
+                    coinOsc.type = 'sine';
+                    coinOsc.frequency.setValueAtTime(freq, coinStart);
+                    coinGain.gain.setValueAtTime(0.14, coinStart);
+                    coinGain.gain.exponentialRampToValueAtTime(0.0001, coinStart + 0.4);
+                    coinOsc.connect(coinGain);
+                    coinGain.connect(ctx.destination);
+                    coinOsc.start(coinStart);
+                    coinOsc.stop(coinStart + 0.42);
+                });
+            } catch (e) {}
+        };
+
+        // Global automatic click sound & haptics for all buttons, tabs, & clickable elements
+        document.addEventListener('pointerdown', (e) => {
+            const targetBtn = e.target.closest('button, a, input[type="submit"], [role="button"]');
+            if (targetBtn) {
+                // If the button is specifically intended to trigger the money sound, skip click pop
+                if (targetBtn.id === 'savePaymentConfirmBtn') {
+                    return;
+                }
+                window.playClickSound();
+            }
+        }, { passive: true });
+    </script>
     <style>
         *, *::before, *::after {
             -webkit-user-select: none;
@@ -603,7 +743,7 @@
             
             <div class="flex gap-2.5">
                 <button onclick="closePaymentModal()" class="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold py-3 rounded-xl active:bg-slate-200 dark:active:bg-slate-700 transition-colors text-sm">Cancel</button>
-                <button onclick="savePayment()" class="flex-1 bg-gradient-to-r from-emerald-800 to-green-900 text-white font-bold py-3 rounded-xl active:from-emerald-900 active:to-green-950 transition-colors shadow-md shadow-emerald-900/20 text-sm">Add Payment</button>
+                <button id="savePaymentConfirmBtn" onclick="savePayment()" class="flex-1 bg-gradient-to-r from-emerald-800 to-green-900 text-white font-bold py-3 rounded-xl active:from-emerald-900 active:to-green-950 transition-colors shadow-md shadow-emerald-900/20 text-sm">Add Payment</button>
             </div>
         </div>
     </div>
@@ -1179,6 +1319,10 @@
             if (activePaymentRecordIndex === null) return;
             const amt = parseFloat(document.getElementById('newPaymentAmount').value);
             if (isNaN(amt) || amt <= 0) { window.customAlert("Enter a valid amount."); return; }
+            
+            // Play Ka-Ching & Coin Chime sound + Money Haptic
+            window.playMoneySound();
+            
             const r = records[activePaymentRecordIndex];
             const newPaid = (r.paidAmount || 0) + amt;
             const history = r.paymentHistory || [];
@@ -1340,6 +1484,14 @@
                     paymentHistory: paid > 0 ? [{ amount: paid, date }] : [],
                     userId, createdAt: new Date().toISOString()
                 });
+                
+                // If payment was made on registration, play Ka-Ching! Otherwise click sound
+                if (paid > 0) {
+                    window.playMoneySound();
+                } else {
+                    window.playClickSound();
+                }
+
                 form.reset();
                 document.getElementById('date').valueAsDate = new Date();
                 window.closeAddRecordModal();
